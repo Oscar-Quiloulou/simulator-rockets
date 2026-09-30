@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paramètres — Rocket Simulator</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <p class="safety-banner" role="alert">
+    <strong>Sécurité —</strong> la fabrication et le tir de moteurs fusées artisanaux sont
+    réglementés et potentiellement mortels. Ce simulateur est un outil pédagogique.
+  </p>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">🚀</span>
+        <span>Rocket&nbsp;Simulator</span>
+      </a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html">Simulateur</a>
+        <a href="builder.html">Construction</a>
+        <a href="help.html">Aide</a>
+        <a href="advanced.html">Avancé</a>
+        <a href="settings.html" class="is-active" aria-current="page">Paramètres</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+
+    <section class="card">
+      <h1 class="card-title">Unités d'affichage</h1>
+      <p class="prose-help">
+        Les calculs internes restent <strong>toujours en unités SI</strong>
+        (mètres, kilogrammes, newtons, secondes). Seul l'affichage change.
+      </p>
+
+      <div class="actions">
+        <button type="button" class="btn btn-ghost" id="preset-metric">Preset métrique</button>
+        <button type="button" class="btn btn-ghost" id="preset-imperial">Preset impérial</button>
+        <button type="button" class="btn btn-ghost" id="reset-units">Réinitialiser</button>
+      </div>
+    </section>
+
+    <section class="col-right" id="units-host"></section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      Les préférences sont stockées localement dans votre navigateur.
+      <a href="index.html">Retour au simulateur</a>.
+    </div>
+  </footer>
+
+  <script type="module" src="js/settings.js"></script>
+</body>
+</html>

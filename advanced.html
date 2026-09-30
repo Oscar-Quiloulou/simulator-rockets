@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>À propos — Rocket Simulator</title>
+  <meta name="description" content="Équations, hypothèses, limites du modèle et avertissements légaux du simulateur de fusée artisanale.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <p class="safety-banner" role="alert">
+    <strong>Sécurité —</strong> la fabrication et le tir de moteurs fusées artisanaux sont
+    réglementés et potentiellement mortels. Ce simulateur est un outil pédagogique : il ne
+    remplace ni une certification, ni l'encadrement d'une fédération agréée.
+  </p>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">🚀</span>
+        <span>Rocket&nbsp;Simulator</span>
+      </a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html">Simulateur</a>
+        <a href="builder.html">Construction</a>
+        <a href="help.html" class="is-active" aria-current="page">Aide</a>
+        <a href="advanced.html">Avancé</a>
+        <a href="settings.html">Paramètres</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+
+    <section class="card">
+      <h2 class="card-title">Sommaire</h2>
+      <ul class="prose">
+        <li><a href="#equations">Équations du modèle</a></li>
+        <li><a href="#hypotheses">Hypothèses et limites</a></li>
+        <li><a href="#legal">Avertissement légal et sécurité</a></li>
+        <li><a href="#ressources">Ressources externes</a></li>
+      </ul>
+    </section>
+
+    <section class="col-right">
+
+      <article class="card prose">
+        <h1>À propos du simulateur</h1>
+        <p>
+          Rocket Simulator est un simulateur de vol <strong>1D vertical</strong> entièrement
+          exécuté dans le navigateur. Aucune donnée ne quitte votre machine : tout est calculé
+          localement en JavaScript.
+        </p>
+
+        <h2 id="equations">Équations du modèle</h2>
+
+        <h3>1. Équation du mouvement</h3>
+        <p>
+          La seconde loi de Newton projetée sur l'axe vertical donne :
+        </p>
+        <div class="callout">
+          <code>m · a = T + D + W</code>
+        </div>
+        <p>
+          où <code>T</code> est la poussée, <code>D</code> la traînée aérodynamique et
+          <code>W = -m·g(y)</code> le poids.
+        </p>
+
+        <h3>2. Traînée aérodynamique</h3>
+        <p>La traînée quadratique classique est utilisée :</p>
+        <div class="callout">
+          <code>D = -0,5 · ρ(y) · v · |v| · Cd · A</code>
+        </div>
+        <p>
+          <code>A = π·d²/4</code> est la section frontale, <code>Cd</code> le coefficient de
+          traînée supposé constant. Le signe <code>v·|v|</code> garantit que la traînée
+          s'oppose toujours au mouvement.
+        </p>
+
+        <h3>3. Atmosphère</h3>
+        <p>Un modèle d'atmosphère isotherme exponentiel est utilisé :</p>
+        <div class="callout">
+          <code>ρ(y) = ρ₀ · exp(-y / H)</code><br>
+          ρ₀ = 1,225 kg/m³ &nbsp;•&nbsp; H = 8 500 m
+        </div>
+
+        <h3>4. Pesanteur</h3>
+        <p>La pesanteur décroît avec l'altitude selon la loi de gravitation :</p>
+        <div class="callout">
+          <code>g(y) = g₀ · (R / (R + y))²</code><br>
+          g₀ = 9,80665 m/s² &nbsp;•&nbsp; R = 6 371 000 m
+        </div>
+
+        <h3>5. Consommation de propergol</h3>
+        <p>Le débit massique est supposé constant pendant la combustion :</p>
+        <div class="callout">
+          <code>ṁ = T / (Isp · g₀)</code>
+        </div>
+        <p>
+          La masse décroît donc linéairement de <code>m₀</code> à <code>m_f</code> pendant
+          <code>t_burn</code>, puis reste constante.
+        </p>
+
+        <h3>6. Intégration numérique</h3>
+        <p>
+          Le système d'équations différentielles est intégré par <strong>Runge-Kutta d'ordre 4</strong>
+          avec un pas par défaut de <code>10 ms</code>. L'état est le couple
+          <code>(altitude, vitesse)</code> ; la masse est évaluée analytiquement à chaque
+          sous-pas.
+        </p>
+
+        <h3>7. Vitesse caractéristique (Tsiolkovsky)</h3>
+        <p>La valeur affichée est purement indicative :</p>
+        <div class="callout">
+          <code>Δv = Isp · g₀ · ln(m₀ / m_f)</code>
+        </div>
+        <p>
+          Elle ignore la traînée, la pesanteur et la variation de poussée — c'est donc une
+          <em>borne supérieure théorique</em>, pas l'incrément de vitesse réel du vol.
+        </p>
+
+        <h2 id="hypotheses">Hypothèses et limites</h2>
+        <ul>
+          <li><strong>Vol strictement vertical.</strong> Aucune dérive, aucun vent, aucune
+            rotation, aucune instabilité aérodynamique n'est modélisée.</li>
+          <li><strong>Poussée constante.</strong> La courbe réelle <code>F(t)</code> d'un
+            moteur est une rampe puis une décroissance. Utilisez la poussée moyenne.</li>
+          <li><strong>Cd constant.</strong> En réalité le Cd varie fortement avec le nombre de
+            Mach (pic transsonique). Au-delà de Mach 0,8, le modèle devient optimiste.</li>
+          <li><strong>Atmosphère isotherme.</strong> Correcte jusqu'à environ 11 km, mais ne
+            tient pas compte de la stratosphère réelle.</li>
+          <li><strong>Masse linéaire.</strong> Un grain de propergol à section évolutive
+            (étoilée, tubulaire) produit un débit non constant.</li>
+          <li><strong>Pas de séparation d'étage</strong>, pas de parachute, pas de récupération.</li>
+          <li><strong>Marge statique :</strong> les équations de Barrowman utilisées dans la page
+            Construction sont simplifiées (coiffe + ailerettes, ailerettes rectangulaires
+            équivalentes). Elles donnent un ordre de grandeur, pas une valeur certifiée.</li>
+        </ul>
+
+        <h2 id="legal">Avertissement légal et sécurité</h2>
+        <div class="callout callout-danger">
+          <p>
+            <strong>Ce simulateur n'autorise rien.</strong> Il ne délivre aucune
+            certification, aucune validation de conception, aucune autorisation de tir.
+          </p>
+          <p>
+            En France, la détention, la fabrication et l'utilisation de propergols et de
+            moteurs fusées sont encadrées par le <strong>Code de la défense</strong> et le
+            <strong>décret n° 2010-455</strong> relatif aux produits explosifs. La pratique
+            amateur encadrée passe par des structures agréées (CNES/Planète Sciences,
+            Fédération Française de Fuséophilie, clubs affiliés).
+          </p>
+          <p>
+            Ne tirez jamais près d'une zone habitée, d'un aéroport ou d'une zone protégée.
+            Vérifiez systématiquement l'espace aérien auprès de la DGAC / du gestionnaire
+            local avant tout vol, même de faible hauteur.
+          </p>
+        </div>
+
+        <h2 id="ressources">Ressources externes</h2>
+        <ul>
+          <li><a href="https://openrocket.info/" rel="noopener noreferrer" target="_blank">OpenRocket</a> — simulateur open source complet (6-DOF, courbes de poussée).</li>
+          <li><a href="https://www.thrustcurve.org/" rel="noopener noreferrer" target="_blank">ThrustCurve.org</a> — base de données de courbes de poussée de moteurs commerciaux.</li>
+          <li><a href="https://www.faa.gov/regulations_policies/" rel="noopener noreferrer" target="_blank">FAA — Regulations &amp; Policies</a> — réglementation aérienne américaine (14 CFR Part 101).</li>
+          <li><a href="https://www.legifrance.gouv.fr/" rel="noopener noreferrer" target="_blank">Légifrance</a> — textes français relatifs aux produits explosifs et à l'espace aérien.</li>
+        </ul>
+      </article>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      Rocket Simulator — licence MIT. Aucune garantie, aucune responsabilité.
+    </div>
+  </footer>
+
+</body>
+</html>

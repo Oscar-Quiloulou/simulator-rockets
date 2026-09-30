@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Construction — Rocket Simulator</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <p class="safety-banner" role="alert">
+    <strong>Sécurité —</strong> la fabrication et le tir de moteurs fusées artisanaux sont
+    réglementés et potentiellement mortels. Ce simulateur est un outil pédagogique.
+  </p>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">🚀</span>
+        <span>Rocket&nbsp;Simulator</span>
+      </a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html">Simulateur</a>
+        <a href="builder.html" class="is-active" aria-current="page">Construction</a>
+        <a href="help.html">Aide</a>
+        <a href="advanced.html">Avancé</a>
+        <a href="settings.html">Paramètres</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+
+    <section class="card" aria-labelledby="builder-title">
+      <h2 id="builder-title" class="card-title">Construction</h2>
+      <p class="prose-help" style="margin-bottom: 14px;">
+        Astuce : une fusée peut être <strong>uniquement une coiffe</strong> (mets la longueur du
+        corps à 0) ou n'avoir <strong>aucun aileron</strong> (mets le nombre d'ailerettes à 0).
+      </p>
+
+      <form id="builder-form" novalidate autocomplete="off">
+
+        <h3 class="chart-title">Corps (tube)</h3>
+        <label class="field">
+          <span class="field-label" data-tip="Métal, plastique ou composite. La densité sert à calculer la masse." tabindex="0">Matériau</span>
+          <select id="body-material" name="body-material"></select>
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Longueur totale du tube. Mets 0 pour une fusée « cône seul »." tabindex="0">
+              Longueur <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="body-length" value="600" min="0" step="1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Diamètre extérieur du tube." tabindex="0">
+              Ø extérieur <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="body-diameter" value="50" min="1" step="0.1">
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label" data-tip="Épaisseur de la paroi. Sert à calculer le volume de matière." tabindex="0">
+            Épaisseur de paroi <span class="field-unit" data-unit-for="length">(mm)</span>
+          </span>
+          <input type="number" id="body-thickness" value="2" min="0" step="0.1">
+        </label>
+
+        <h3 class="chart-title">Coiffe</h3>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Matériau de la pointe. Le PLA et le balsa suffisent pour de petites fusées." tabindex="0">Matériau</span>
+            <select id="nose-material" name="nose-material"></select>
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Le cône est plus simple à fabriquer, l'ogive est légèrement plus aérodynamique." tabindex="0">Forme</span>
+            <select id="nose-shape" name="nose-shape">
+              <option value="cone">Cône</option>
+              <option value="ogive" selected>Ogive</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Longueur de la pointe, de sa base jusqu'à la pointe." tabindex="0">
+              Longueur <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="nose-length" value="120" min="0" step="1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Diamètre de la base de la coiffe. Idéalement égal au diamètre du corps." tabindex="0">
+              Ø base <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="nose-diameter" value="50" min="1" step="0.1">
+          </label>
+        </div>
+
+        <h3 class="chart-title">Ailerettes</h3>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Nombre d'ailerettes. 0 = fusée sans ailerons (souvent instable). 3 ou 4 = standard amateur." tabindex="0">Nombre</span>
+            <input type="number" id="fin-count" value="3" min="0" max="12" step="1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Forme des ailerettes. La forme influence la masse et le centre de poussée." tabindex="0">Forme</span>
+            <select id="fin-shape" name="fin-shape">
+              <option value="triangulaire" selected>Triangulaire</option>
+              <option value="trapezoidale">Trapézoïdale</option>
+              <option value="rectangulaire">Rectangulaire</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Corde de l'ailerette (dimension le long du corps)." tabindex="0">
+              Corde <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="fin-height" value="80" min="0" step="1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Envergure : de combien l'ailerette dépasse du corps." tabindex="0">
+              Envergure <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="fin-width" value="45" min="0" step="1">
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Épaisseur de la plaque d'ailerette." tabindex="0">
+              Épaisseur <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="fin-thickness" value="3" min="0" step="0.1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Le balsa est très léger mais fragile. Le contreplaqué est un bon compromis." tabindex="0">Matériau</span>
+            <select id="fin-material" name="fin-material"></select>
+          </label>
+        </div>
+
+        <h3 class="chart-title">Moteur</h3>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Masse totale du moteur, carburant inclus." tabindex="0">
+              Masse totale <span class="field-unit" data-unit-for="mass">(g)</span>
+            </span>
+            <input type="number" id="motor-mass" value="150" min="0" step="0.1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Part de la masse totale qui est du propergol (brûlé pendant le vol)." tabindex="0">
+              dont propergol <span class="field-unit" data-unit-for="mass">(g)</span>
+            </span>
+            <input type="number" id="motor-propellant" value="50" min="0" step="0.1">
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label" data-tip="Distance entre la base de la fusée et le centre de gravité du moteur." tabindex="0">
+            Position depuis la base <span class="field-unit" data-unit-for="length">(mm)</span>
+          </span>
+          <input type="number" id="motor-position" value="60" min="0" step="1">
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Force moyenne exercée pendant la combustion." tabindex="0">
+              Poussée <span class="field-unit" data-unit-for="force">(N)</span>
+            </span>
+            <input type="number" id="motor-thrust" value="40" min="0" step="0.1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Durée totale de la combustion." tabindex="0">Combustion (s)</span>
+            <input type="number" id="motor-burn" value="1.2" min="0" step="0.01">
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label" data-tip="Impulsion spécifique — efficacité du couple carburant/comburant." tabindex="0">Isp (s)</span>
+          <input type="number" id="motor-isp" value="110" min="1" step="1">
+        </label>
+
+        <h3 class="chart-title">Charge utile</h3>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Masse de l'électronique, du parachute, de la caméra… placée dans la coiffe." tabindex="0">
+              Masse <span class="field-unit" data-unit-for="mass">(g)</span>
+            </span>
+            <input type="number" id="payload-mass" value="20" min="0" step="0.1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Distance entre la base de la fusée et le centre de gravité de la charge utile." tabindex="0">
+              Position depuis la base <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="payload-position" value="500" min="0" step="1">
+          </label>
+        </div>
+
+        <h3 class="chart-title">Aérodynamique</h3>
+        <label class="field">
+          <span class="field-label" data-tip="Coefficient de traînée de la fusée assemblée. Sert pour la simulation. 0,4 = aérodynamique ; 0,6–0,8 = forme peu soignée." tabindex="0">
+            Cd global (—)
+          </span>
+          <input type="number" id="drag-cd" value="0.5" min="0.01" step="0.01">
+        </label>
+      </form>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="send-simulator">
+          Envoyer vers le simulateur
+        </button>
+      </div>
+    </section>
+
+    <section class="col-right">
+      <div class="card">
+        <h2 class="card-title">Masse &amp; centrages</h2>
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="stat-label" data-tip="Masse totale = coque + moteur + charge utile.">Masse totale</span>
+            <span class="stat-value" id="out-mass">—</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label" data-tip="Centre de gravité : point d'équilibre de la fusée.">CG (base)</span>
+            <span class="stat-value" id="out-cg">—</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label" data-tip="Centre de poussée aérodynamique : point où s'appliquent les forces de l'air.">CP (base)</span>
+            <span class="stat-value" id="out-cp">—</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label" data-tip="Marge statique = (CG − CP) / diamètre. Il faut CP derrière CG, donc marge &gt; 0. Idéal ≥ 1 calibre.">Marge statique</span>
+            <span class="stat-value" id="out-margin">—</span>
+          </div>
+        </div>
+
+        <div class="stability">
+          <span class="stability-badge" id="stability-badge" data-level="bad">—</span>
+          <span class="stability-text" id="stability-text"></span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="chart-title">Détail des pièces</h3>
+          <table class="parts-table">
+            <thead>
+              <tr>
+                <th scope="col">Pièce</th>
+                <th scope="col" class="num">Masse (kg)</th>
+                <th scope="col" class="num">CG (cm)</th>
+              </tr>
+            </thead>
+            <tbody id="parts-body"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3 class="chart-title">Schéma</h3>
+          <div id="rocket-diagram"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      Marge statique : Barrowman simplifié — voir <a href="advanced.html">Avancé</a>.
+    </div>
+  </footer>
+
+  <script type="module" src="js/builder.js"></script>
+</body>
+</html>

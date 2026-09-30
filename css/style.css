@@ -1,0 +1,200 @@
+/* ==========================================================================
+   1. Variables de thème
+   ========================================================================== */
+:root {
+  --bg: #0a0f1a;
+  --surface: #111827;
+  --surface-alt: #0f172a;
+  --border: #1f2937;
+  --border-soft: #172033;
+
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  --accent: #38bdf8;
+  --accent-strong: #0ea5e9;
+  --ok: #22c55e;
+  --warn: #f59e0b;
+  --danger: #dc2626;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --pad: 20px;
+  --gap: 20px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --max-width: 1280px;
+}
+
+/* ==========================================================================
+   2. Base
+   ========================================================================== */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3 {
+  line-height: 1.25;
+  font-weight: 650;
+}
+
+code, kbd, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+/* ==========================================================================
+   3. Bandeau de sécurité (fixe, non fermable)
+   ========================================================================== */
+.safety-banner {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, #7f1d1d, #991b1b);
+  color: #fee2e2;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 8px 16px;
+  border-bottom: 1px solid #450a0a;
+  text-align: center;
+}
+
+.safety-banner strong {
+  color: #fff;
+}
+
+/* ==========================================================================
+   4. En-tête + navigation
+   ========================================================================== */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: rgba(17, 24, 39, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 14px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.2px;
+}
+
+.brand-mark {
+  font-size: 20px;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.site-nav a {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.site-nav a:hover {
+  color: var(--text);
+  background: #1b2537;
+}
+
+.site-nav a.is-active {
+  color: var(--accent);
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+/* ==========================================================================
+   5. Layout principal
+   ========================================================================== */
+main.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: var(--gap);
+  align-items: start;
+  padding-block: var(--gap) 40px;
+}
+
+.col-right {
+  display: grid;
+  gap: var(--gap);
+  min-width: 0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--gap);
+}
+
+/* ==========================================================================
+   6. Pied de page
+   ========================================================================== */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 18px 0 28px;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.site-footer a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   7. Responsive — 768px
+   ========================================================================== */
+@media (max-width: 768px) {
+  main.layout {
+    grid-template-columns: 1fr;
+  }
+
+  .header-inner {
+    justify-content: center;
+  }
+
+  .safety-banner {
+    font-size: 12px;
+  }
+}

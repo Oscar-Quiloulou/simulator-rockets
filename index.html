@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulateur — Rocket Simulator</title>
+  <meta name="description" content="Simulateur 1D de vol de fusée artisanale.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <p class="safety-banner" role="alert">
+    <strong>Sécurité —</strong> la fabrication et le tir de moteurs fusées artisanaux sont
+    réglementés et potentiellement mortels. Ce simulateur est un outil pédagogique.
+  </p>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">🚀</span>
+        <span>Rocket&nbsp;Simulator</span>
+      </a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html" class="is-active" aria-current="page">Simulateur</a>
+        <a href="builder.html">Construction</a>
+        <a href="help.html">Aide</a>
+        <a href="advanced.html">Avancé</a>
+        <a href="settings.html">Paramètres</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+
+    <section class="card" aria-labelledby="config-title">
+      <h2 id="config-title" class="card-title">Configuration</h2>
+
+      <label class="field">
+        <span class="field-label">Fusée prédéfinie</span>
+        <select id="preset-select"></select>
+      </label>
+
+      <form id="rocket-form" novalidate autocomplete="off">
+        <label class="field">
+          <span class="field-label" data-tip="Nom libre, sans effet sur la simulation.">Nom de la fusée</span>
+          <input type="text" id="name" name="name" value="Ma fusée">
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Masse de la fusée sans le carburant (coque, coiffe, ailerettes)." tabindex="0">
+              Masse à vide <span class="field-unit" data-unit-for="mass">(g)</span>
+            </span>
+            <input type="number" id="dryMass" name="dryMass" value="120" min="0.001" step="0.1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Masse du mélange carburant + comburant qui brûle pendant la combustion." tabindex="0">
+              Propergol <span class="field-unit" data-unit-for="mass">(g)</span>
+            </span>
+            <input type="number" id="propellantMass" name="propellantMass" value="50" min="0" step="0.1">
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Diamètre extérieur du corps de la fusée. Plus il est grand, plus la traînée est forte." tabindex="0">
+              Diamètre <span class="field-unit" data-unit-for="length">(mm)</span>
+            </span>
+            <input type="number" id="diameter" name="diameter" value="25" min="1" step="0.1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Coefficient de traînée, sans unité. 0,3 = très aérodynamique ; 1,0 = forme plate." tabindex="0">
+              Cd (—)
+            </span>
+            <input type="number" id="cd" name="cd" value="0.5" min="0.01" step="0.01">
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Force exercée par le moteur pendant la combustion. 1 N ≈ poids d'une pomme (100 g)." tabindex="0">
+              Poussée moyenne <span class="field-unit" data-unit-for="force">(N)</span>
+            </span>
+            <input type="number" id="thrust" name="thrust" value="40" min="0" step="0.1">
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Temps pendant lequel le moteur produit de la poussée." tabindex="0">
+              Combustion (s)
+            </span>
+            <input type="number" id="burnTime" name="burnTime" value="1.2" min="0" step="0.01">
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field-label" data-tip="Impulsion spécifique : note d'efficacité du couple carburant/comburant. Solide amateur ≈ 100–130 s ; liquide pro ≈ 300–450 s." tabindex="0">
+            Impulsion spécifique <span class="field-unit" data-unit-for="isp">(s)</span>
+          </span>
+          <input type="number" id="isp" name="isp" value="110" min="1" step="1">
+        </label>
+      </form>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="run">Lancer la simulation</button>
+        <button type="button" class="btn btn-ghost" id="reset">Réinitialiser</button>
+      </div>
+
+      <p class="errors" id="form-errors" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="col-right">
+      <div class="card">
+        <h2 class="card-title">Résultats</h2>
+        <div id="results"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="chart-title">Altitude</h3>
+        <div class="chart-host" id="chart-altitude"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="chart-title">Vitesse</h3>
+        <div class="chart-host" id="chart-velocity"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="chart-title">Accélération</h3>
+        <div class="chart-host" id="chart-acceleration"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      Besoin d'aide ? <a href="help.html">Version simple</a> ·
+      <a href="advanced.html">Équations</a> ·
+      <a href="settings.html">Changer d'unités</a>.
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
