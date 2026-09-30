@@ -1,5 +1,6 @@
 /**
- * Point d'entrée du simulateur : formulaire, presets, unités, graphiques.
+ * Point d'entrée du simulateur : formulaire, presets, unités, graphiques,
+ * analyse automatique.
  * @module main
  */
 
@@ -9,6 +10,7 @@ import { readForm, fillForm } from './form.js';
 import { renderResults } from './results.js';
 import { renderChart } from './charts.js';
 import { getUnits, toDisplay, unitLabel, refreshUnitLabels } from './units.js';
+import { analyzeFlight, renderAdvices } from './advisor.js';
 import { $, on, debounce, createEl } from './ui.js';
 
 const STORAGE_BUILDER = 'rocket-simulator:config';
@@ -18,6 +20,7 @@ const form = /** @type {HTMLFormElement} */ ($('#rocket-form'));
 const presetSelect = /** @type {HTMLSelectElement} */ ($('#preset-select'));
 const errorBox = /** @type {HTMLElement} */ ($('#form-errors'));
 const resultsHost = /** @type {HTMLElement} */ ($('#results'));
+const advisorHost = /** @type {HTMLElement} */ ($('#advisor'));
 
 /**
  * @param {string[]} errors
@@ -28,7 +31,6 @@ function showErrors(errors) {
 }
 
 /**
- * Convertit un champ d'un échantillon vers l'unité d'affichage.
  * @param {Object[]} samples
  * @param {string} key
  * @param {?string} quantity
@@ -67,7 +69,6 @@ function renderCharts(result) {
     unit: 'm/s²', xUnit: 's', color: '#f59e0b'
   });
 
-  // Trajectoire (x vs y) — mêmes unités sur les deux axes
   const trajHost = $('#chart-trajectory');
   trajHost.textContent = '';
   const trajSamples = result.samples.map((s) => ({
@@ -102,13 +103,13 @@ function run() {
 
   const result = simulate(config, 0.01, 600);
   renderResults(resultsHost, result, config);
+  renderAdvices(advisorHost, analyzeFlight(config, result));
   refreshUnitLabels(form);
   renderCharts(result);
 }
 
 const runLive = debounce(run, 200);
 
-// --- Initialisation du sélecteur de presets ---
 for (const preset of PRESETS) {
   const option = document.createElement('option');
   option.value = preset.id;
@@ -116,7 +117,6 @@ for (const preset of PRESETS) {
   presetSelect.appendChild(option);
 }
 
-// --- Wiring ---
 on(form, 'input', runLive);
 on(form, 'change', runLive);
 on(/** @type {HTMLElement} */ ($('#run')), 'click', run);
@@ -139,7 +139,6 @@ on(window, 'storage', (event) => {
   if (event.key === 'rocket-simulator:units') run();
 });
 
-// --- Chargement initial ---
 const fromBuilder = localStorage.getItem(STORAGE_BUILDER);
 const lastConfig = localStorage.getItem(STORAGE_LAST);
 

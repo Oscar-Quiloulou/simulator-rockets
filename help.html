@@ -13,7 +13,7 @@
 
   <p class="safety-banner" role="alert">
     <strong>Sécurité —</strong> ne fabrique et ne lance jamais une fusée sans adulte
-    compétent et sans autorisation. Ce simulateur est un jeu éducatif, pas un mode d'emploi.
+    compétent et sans autorisation.
   </p>
 
   <header class="site-header">
@@ -25,6 +25,7 @@
       <nav class="site-nav" aria-label="Navigation principale">
         <a href="index.html">Simulateur</a>
         <a href="builder.html">Construction</a>
+        <a href="propellant.html">Mélanges</a>
         <a href="help.html" class="is-active" aria-current="page">Aide</a>
         <a href="advanced.html">Avancé</a>
         <a href="settings.html">Paramètres</a>
@@ -41,114 +42,102 @@
         <li><a href="#forces">Les 3 forces en jeu</a></li>
         <li><a href="#reglages">Les réglages du simulateur</a></li>
         <li><a href="#graphiques">Lire les graphiques</a></li>
+        <li><a href="#conseils">Comprendre les conseils automatiques</a></li>
         <li><a href="#lexique">Petit lexique</a></li>
         <li><a href="#securite">Règles de sécurité</a></li>
       </ul>
-      <p class="prose-help" style="margin-top: 16px;">
-        Pour les équations complètes, voir <a href="advanced.html">la page Avancé</a>.
-      </p>
     </aside>
 
     <section class="col-right">
-
       <article class="card prose-help">
         <h1 id="fusee">1. C'est quoi une fusée ?</h1>
         <p>
           Prends un ballon de baudruche gonflé, lâche-le sans faire de nœud : il part en
-          zigzag dans la pièce. Pourquoi ? Parce que l'air qui sort d'un côté pousse le
-          ballon de l'autre. C'est exactement le principe d'une fusée.
+          zigzag dans la pièce. L'air qui sort d'un côté pousse le ballon de l'autre.
+          C'est exactement le principe d'une fusée.
         </p>
         <p>
-          Une fusée n'a pas besoin d'air pour avancer (elle peut voler dans l'espace). Elle
-          transporte son propre « carburant » et le brûle très vite. Les gaz chauds sortent
-          par la tuyère en bas, et ça la pousse vers le haut. On appelle ça la
-          <strong>réaction</strong> (ou action-réaction, la 3<sup>e</sup> loi de Newton).
+          Une fusée n'a pas besoin d'air pour avancer. Elle transporte son carburant et le
+          brûle très vite : les gaz chauds sortent par la tuyère et la poussent vers le
+          haut. C'est la <strong>réaction</strong> (3<sup>e</sup> loi de Newton).
         </p>
 
         <h2 id="forces">2. Les 3 forces en jeu</h2>
-        <p>Pendant le vol, trois forces agissent sur la fusée :</p>
         <ul>
-          <li>
-            <strong>La poussée (↑)</strong> — c'est le moteur qui pousse la fusée vers le
-            haut. Elle est d'autant plus forte que le moteur est puissant. Elle s'arrête
-            quand le carburant est épuisé.
-          </li>
-          <li>
-            <strong>Le poids (↓)</strong> — la Terre attire la fusée vers le bas. Plus la
-            fusée est lourde, plus le poids est grand. <em>Il faut une poussée plus forte
-            que le poids pour décoller.</em>
-          </li>
-          <li>
-            <strong>La traînée (↓)</strong> — c'est le frottement de l'air. Plus la fusée va
-            vite et plus elle est large, plus l'air la freine. C'est pour ça qu'on fait des
-            fusées fines et pointues !
-          </li>
+          <li><strong>Poussée (↑)</strong> — le moteur qui pousse vers le haut.</li>
+          <li><strong>Poids (↓)</strong> — la Terre attire la fusée.</li>
+          <li><strong>Traînée (↓)</strong> — le frottement de l'air. Ça freine.</li>
         </ul>
         <div class="callout">
-          Au décollage : Poussée &gt; Poids → la fusée monte. À l'apogée, la vitesse devient
-          nulle, puis le poids la fait redescendre.
+          Décollage : Poussée &gt; Poids → ça monte. Apogée : la vitesse devient nulle, puis
+          ça redescend.
         </div>
 
         <h2 id="reglages">3. Les réglages du simulateur</h2>
         <ul>
-          <li><strong>Masse à vide</strong> — le poids de la fusée sans carburant (coque, ailerons, coiffe...).</li>
-          <li><strong>Propergol</strong> — le poids du carburant + comburant (ce qui brûle).</li>
-          <li><strong>Diamètre</strong> — la largeur du corps. Plus c'est large, plus la traînée est forte.</li>
-          <li><strong>Cd</strong> — le « coefficient de traînée ». Plus il est grand, plus la fusée est freinée par l'air. Un cône pointu a un Cd faible (~0,3), une forme plate a un Cd élevé (~1,0).</li>
-          <li><strong>Poussée</strong> — la force du moteur en newtons. 1 N ≈ le poids d'une pomme (100 g).</li>
-          <li><strong>Durée de combustion</strong> — combien de temps le moteur brûle.</li>
-          <li><strong>Isp</strong> — l'« impulsion spécifique », en secondes. C'est une note de qualité du carburant : plus elle est haute, plus le moteur est efficace. Un moteur de voiture est à ~3 000 s, un moteur fusée chimique à 250–450 s.</li>
+          <li><strong>Masse à vide</strong> — la fusée sans carburant.</li>
+          <li><strong>Propergol</strong> — le carburant qui brûle.</li>
+          <li><strong>Diamètre</strong> — largeur du corps.</li>
+          <li><strong>Cd</strong> — coefficient de traînée : plus c'est grand, plus l'air freine.</li>
+          <li><strong>Poussée</strong> — la force du moteur, en newtons.</li>
+          <li><strong>Combustion</strong> — combien de temps le moteur pousse.</li>
+          <li><strong>Isp</strong> — efficacité du carburant. 100–130 s en amateur.</li>
+          <li><strong>Angle</strong> — 0° = tir vertical, plus grand = tir incliné.</li>
+          <li><strong>Guidage</strong> — longueur de rampe qui guide la fusée au décollage.</li>
         </ul>
 
         <h2 id="graphiques">4. Lire les graphiques</h2>
-        <p>Trois graphiques apparaissent à droite :</p>
         <ul>
-          <li>
-            <strong>Altitude</strong> — la hauteur en fonction du temps. Elle monte en
-            accélérant, atteint un maximum (l'<em>apogée</em>) puis redescend.
-          </li>
-          <li>
-            <strong>Vitesse</strong> — combien de mètres la fusée parcourt chaque seconde.
-            Elle atteint un pic juste après l'allumage du moteur, puis diminue.
-          </li>
-          <li>
-            <strong>Accélération</strong> — à quelle vitesse la vitesse change. Le pic se
-            produit au décollage quand le carburant est encore là (la fusée est lourde mais
-            le moteur pousse fort). Pendant la chute, elle est négative.
-          </li>
+          <li><strong>Altitude</strong> — hauteur en fonction du temps. Maximum = apogée.</li>
+          <li><strong>Vitesse</strong> — mètres parcourus par seconde.</li>
+          <li><strong>Accélération</strong> — à quelle vitesse la vitesse change.</li>
+          <li><strong>Trajectoire</strong> — vue de côté : parabolique si incliné.</li>
         </ul>
-        <p>Passe ta souris sur les courbes pour voir les valeurs exactes à chaque instant.</p>
+        <p>Survole les courbes pour voir les valeurs exactes.</p>
 
-        <h2 id="lexique">5. Petit lexique</h2>
+        <h2 id="conseils">5. Comprendre les conseils automatiques</h2>
+        <p>
+          Une analyse automatique affiche des conseils sur ta fusée. Code couleur :
+        </p>
         <ul>
-          <li><strong>Apogée</strong> — le point le plus haut de la trajectoire.</li>
-          <li><strong>Propergol</strong> — mélange carburant + comburant qui brûle dans le moteur.</li>
-          <li><strong>Tuyère</strong> — le cône creux par lequel sortent les gaz brûlants.</li>
+          <li><strong style="color:#f87171;">Rouge</strong> — problème sérieux : la fusée
+            ne volera pas ou sera dangereuse.</li>
+          <li><strong style="color:#fcd34d;">Jaune</strong> — à surveiller, la marge est
+            faible.</li>
+          <li><strong style="color:#94a3b8;">Bleu</strong> — information, à savoir sans
+            urgence.</li>
+          <li><strong style="color:#22c55e;">Vert</strong> — tout va bien sur ce point.</li>
+        </ul>
+
+        <h2 id="lexique">6. Petit lexique</h2>
+        <ul>
+          <li><strong>Apogée</strong> — point le plus haut.</li>
+          <li><strong>Propergol</strong> — carburant + comburant.</li>
           <li><strong>Isp</strong> — impulsion spécifique, en secondes.</li>
-          <li><strong>Mach</strong> — vitesse comparée à celle du son. Mach 1 = vitesse du son.</li>
-          <li><strong>CG (centre de gravité)</strong> — le point d'équilibre de la fusée.</li>
-          <li><strong>CP (centre de poussée)</strong> — le point où s'applique la force de l'air.</li>
+          <li><strong>Mach</strong> — vitesse comparée à celle du son.</li>
+          <li><strong>CG</strong> — centre de gravité.</li>
+          <li><strong>CP</strong> — centre de poussée.</li>
+          <li><strong>TWR</strong> — rapport poussée/poids au décollage.</li>
         </ul>
 
-        <h2 id="securite">6. Règles de sécurité</h2>
+        <h2 id="securite">7. Règles de sécurité</h2>
         <div class="callout callout-danger">
           <ul>
             <li>Ne fabrique <strong>jamais</strong> de propergol sans encadrement.</li>
-            <li>Ne lance jamais une fusée près d'habitations, d'aéroports ou de forêts.</li>
-            <li>Porte des lunettes, éloigne-toi de plusieurs mètres avant l'allumage.</li>
-            <li>Utilise une rampe de lancement et un système d'allumage à distance.</li>
-            <li>En France, la pratique amateur passe par des clubs affiliés (Planète Sciences, FFF).</li>
+            <li>Ne lance jamais près d'habitations, d'aéroports ou de forêts.</li>
+            <li>Porte des lunettes, éloigne-toi avant l'allumage.</li>
+            <li>Utilise une rampe et un allumage à distance.</li>
+            <li>En France, la pratique amateur passe par des clubs agréés.</li>
           </ul>
         </div>
       </article>
-
     </section>
 
   </main>
 
   <footer class="site-footer">
     <div class="wrap">
-      Aide simplifiée — pour les détails techniques, voir <a href="advanced.html">Avancé</a>.
+      Aide simplifiée — pour les détails, <a href="advanced.html">Avancé</a>.
     </div>
   </footer>
 

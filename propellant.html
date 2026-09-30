@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mélanges — Rocket Simulator</title>
+  <meta name="description" content="Calculateur pédagogique de répartition massique de mélanges pour fusée.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <p class="safety-banner" role="alert">
+    <strong>Sécurité —</strong> la fabrication et le tir de moteurs fusées artisanaux sont
+    réglementés et potentiellement mortels. Ce simulateur est un outil pédagogique.
+  </p>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">🚀</span>
+        <span>Rocket&nbsp;Simulator</span>
+      </a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html">Simulateur</a>
+        <a href="builder.html">Construction</a>
+        <a href="propellant.html" class="is-active" aria-current="page">Mélanges</a>
+        <a href="help.html">Aide</a>
+        <a href="advanced.html">Avancé</a>
+        <a href="settings.html">Paramètres</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+
+    <section class="card" aria-labelledby="gate-title">
+      <h2 id="gate-title" class="card-title">Avant d'accéder à l'outil</h2>
+
+      <div class="callout callout-danger">
+        <p><strong>Cette page est un outil de prévention, pas un mode d'emploi.</strong></p>
+        <p>
+          Elle ne fournit <strong>aucune étape de fabrication</strong>, aucune température,
+          aucun protocole. Elle donne uniquement la <em>répartition massique</em> d'un
+          mélange, à partir de rapports publics, dans le but d'éviter les erreurs de
+          dosage qui sont la première cause d'accidents graves.
+        </p>
+        <p>
+          En France, la fabrication de propergols est <strong>strictement encadrée</strong>
+          par le Code de la défense et le décret n° 2010-455 relatif aux produits
+          explosifs. Elle est <strong>illégale sans autorisation préfectorale</strong>.
+          La pratique amateur encadrée passe par des clubs agréés (Planète Sciences,
+          Fédération Française de Fuséophilie).
+        </p>
+      </div>
+
+      <div id="propellant-gate">
+        <h3 class="chart-title">Pour continuer, confirmez les points suivants</h3>
+        <ul class="ack-list">
+          <li class="ack-item">
+            <label>
+              <input type="checkbox" data-ack>
+              <span>J'ai <strong>18 ans ou plus</strong>.</span>
+            </label>
+          </li>
+          <li class="ack-item">
+            <label>
+              <input type="checkbox" data-ack>
+              <span>Je comprends que la fabrication de propergol est
+                <strong>illégale en France</strong> sans autorisation préfectorale.</span>
+            </label>
+          </li>
+          <li class="ack-item">
+            <label>
+              <input type="checkbox" data-ack>
+              <span>Je consulte cette page à titre <strong>pédagogique</strong>, et je
+                n'utiliserai pas ces informations pour fabriquer un mélange sans
+                encadrement.</span>
+            </label>
+          </li>
+          <li class="ack-item">
+            <label>
+              <input type="checkbox" data-ack>
+              <span>Je suis conscient(e) que la manipulation de comburants et de
+                poudres fines présente des <strong>risques d'incendie, de brûlure
+                chimique et d'explosion</strong>.</span>
+            </label>
+          </li>
+        </ul>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="unlock" disabled>
+            Accéder au calculateur
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="col-right" id="propellant-tool" hidden>
+
+      <article class="card">
+        <h2 class="card-title">Calculateur de répartition massique</h2>
+
+        <form id="propellant-form" novalidate autocomplete="off">
+          <label class="field">
+            <span class="field-label" data-tip="Choisissez le type de mélange. Chaque recette possède son nom technique et son ratio public." tabindex="0">
+              Recette
+            </span>
+            <select id="recipe" name="recipe"></select>
+          </label>
+
+          <label class="field">
+            <span class="field-label" data-tip="Masse totale de mélange que vous prévoyez de préparer, en grammes. Ce calculateur vous indique la répartition entre les ingrédients." tabindex="0">
+              Masse totale de mélange (g)
+            </span>
+            <input type="number" id="mass" name="mass" value="100" min="0" step="1">
+          </label>
+
+          <label class="field">
+            <span class="field-label" data-tip="Impulsion spécifique du mélange. Un propergol solide amateur typique est autour de 100–130 s. La valeur par défaut (110 s) convient pour un premier dimensionnement." tabindex="0">
+              Isp retenue (s)
+            </span>
+            <input type="number" id="isp" name="isp" value="110" min="1" step="1">
+          </label>
+        </form>
+      </article>
+
+      <article class="card">
+        <h2 class="card-title">Résultat</h2>
+        <div id="propellant-results"></div>
+      </article>
+
+      <article class="card">
+        <h2 class="card-title">Ressources encadrées</h2>
+        <ul class="prose-help">
+          <li><a href="https://www.planete-sciences.org/" rel="noopener noreferrer" target="_blank">Planète Sciences</a> — clubs fusées encadrés en France.</li>
+          <li><a href="https://www.ff-fusee.com/" rel="noopener noreferrer" target="_blank">Fédération Française de Fuséophilie</a> — cadre réglementaire et clubs agréés.</li>
+          <li><a href="https://www.legifrance.gouv.fr/" rel="noopener noreferrer" target="_blank">Légifrance</a> — textes relatifs aux produits explosifs.</li>
+          <li><a href="advanced.html">Page Avancé</a> — hypothèses et limites du modèle physique.</li>
+        </ul>
+      </article>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      Aucune donnée n'est envoyée. Tout est calculé dans votre navigateur.
+    </div>
+  </footer>
+
+  <script type="module" src="js/propellant-page.js"></script>
+</body>
+</html>

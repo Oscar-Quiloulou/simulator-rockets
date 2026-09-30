@@ -1,6 +1,6 @@
 /**
  * Page Construction : câblage formulaire, schéma, aperçu trajectoire,
- * envoi vers le simulateur.
+ * analyse automatique, envoi vers le simulateur.
  * @module builder
  */
 
@@ -14,12 +14,12 @@ import {
 } from './structure.js';
 import { drawDiagram, setHighlight } from './diagram.js';
 import { drawLaunchPreview } from './launch-preview.js';
+import { analyzeStructure, renderAdvices } from './advisor.js';
 import { $, on, fmt, createEl } from './ui.js';
 
 const STORAGE_KEY = 'rocket-simulator:config';
 
 /**
- * Associe chaque champ à l'action sur le schéma.
  * @type {Record<string, {kind:'part',part:string}|{kind:'guide',part:string}>}
  */
 const DIAGRAM_MAP = {
@@ -48,13 +48,11 @@ const DIAGRAM_MAP = {
 };
 
 /**
- * Applique le highlight lié à un champ.
  * @param {string} fieldId
  */
 function hoverField(fieldId) {
   const def = DIAGRAM_MAP[fieldId];
   if (!def) return;
-
   if (def.kind === 'guide') {
     const el = /** @type {HTMLInputElement|null} */ (document.getElementById(fieldId));
     const raw = Number.parseFloat(el?.value ?? '');
@@ -67,7 +65,6 @@ function hoverField(fieldId) {
 }
 
 /**
- * Construit la config passée au moteur physique.
  * @param {ReturnType<typeof collect>} input
  * @param {ReturnType<typeof computeStructure>} model
  * @returns {import('./physics.js').RocketConfig}
@@ -89,9 +86,7 @@ function buildSimConfig(input, model) {
   };
 }
 
-/**
- * Met à jour tableau, indicateurs, schéma et aperçu trajectoire.
- */
+/** Met à jour tableau, indicateurs, schéma, aperçu et conseils. */
 function render() {
   const input = collect();
   saveState(input);
@@ -101,7 +96,7 @@ function render() {
   const massUnit = unitLabel('mass', units);
   const lengthUnit = unitLabel('length', units);
 
-  // --- Tableau des pièces ---
+  // Tableau
   const tbody = /** @type {HTMLElement} */ ($('#parts-body'));
   tbody.textContent = '';
   for (const part of model.parts) {
@@ -117,37 +112,34 @@ function render() {
     createEl('td', { class: 'num', text: fmt(toDisplay(model.cg, 'length', units), 1) })
   ]));
 
-  // --- Statistiques ---
+  // Stats
   $('#out-mass').textContent = `${fmt(toDisplay(model.totalMass, 'mass', units), 3)} ${massUnit}`;
   $('#out-cg').textContent = `${fmt(toDisplay(model.cg, 'length', units), 1)} ${lengthUnit}`;
   $('#out-cp').textContent = `${fmt(toDisplay(model.cp, 'length', units), 1)} ${lengthUnit}`;
   $('#out-margin').textContent = fmt(model.margin, 2);
 
-  // --- Stabilité ---
+  // Stabilité
   const badge = /** @type {HTMLElement} */ ($('#stability-badge'));
   const text = /** @type {HTMLElement} */ ($('#stability-text'));
-
   if (input.fins.count === 0 && model.margin < 1) {
     badge.dataset.level = 'bad';
     badge.textContent = 'Très instable';
-    text.textContent =
-      "Une fusée sans ailerettes est presque toujours instable. Ajoutez au moins 3 ailerettes ou du poids en pointe.";
+    text.textContent = "Une fusée sans ailerettes est presque toujours instable.";
   } else if (model.margin >= 1) {
     badge.dataset.level = 'ok';
     badge.textContent = 'Stable';
-    text.textContent = 'Marge statique ≥ 1 calibre : la fusée est stable en vol.';
+    text.textContent = 'Marge statique ≥ 1 calibre.';
   } else if (model.margin >= 0.5) {
     badge.dataset.level = 'warn';
     badge.textContent = 'Limite';
-    text.textContent = 'Marge entre 0,5 et 1 calibre : vol possible mais sensible au vent.';
+    text.textContent = 'Marge entre 0,5 et 1 calibre.';
   } else {
     badge.dataset.level = 'bad';
     badge.textContent = 'Instable';
-    text.textContent =
-      'Marge < 0,5 calibre : risque de culbute. Ajoutez du poids en pointe ou agrandissez les ailerettes.';
+    text.textContent = 'Marge < 0,5 calibre.';
   }
 
-  // --- Description du lancement ---
+  // Lancement
   const info = $('#out-launch-info');
   if (info) {
     const isFree = input.launchMethod === 'free' || input.railLength <= 1e-6;
@@ -161,14 +153,13 @@ function render() {
     }
   }
 
-  // --- Schéma ---
+  // Schéma + aperçu
   drawDiagram(/** @type {HTMLElement} */ ($('#rocket-diagram')), model);
+  drawLaunchPreview($('#launch-preview'), buildSimConfig(input, model));
 
-  // --- Aperçu de la trajectoire ---
-  const previewHost = $('#launch-preview');
-  if (previewHost) {
-    drawLaunchPreview(previewHost, buildSimConfig(input, model));
-  }
+  // Conseils
+  const advisorHost = $('#builder-advisor');
+  if (advisorHost) renderAdvices(advisorHost, analyzeStructure(input, model));
 }
 
 /** Envoie la configuration vers le simulateur. */
@@ -204,7 +195,6 @@ const form = /** @type {HTMLFormElement} */ ($('#builder-form'));
 on(form, 'input', render);
 on(form, 'change', render);
 
-// --- Survol des champs : localisation sur le schéma ---
 on(form, 'pointerover', (event) => {
   const label = /** @type {Element} */ (event.target).closest('[data-diagram]');
   if (!label) return;
