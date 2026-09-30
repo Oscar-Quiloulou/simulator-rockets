@@ -1,7 +1,5 @@
 /**
  * Lecture, validation et remplissage du formulaire de configuration.
- * Les champs dont le nom figure dans QUANTITIES sont convertis
- * entre l'unité d'affichage et le SI.
  * @module form
  */
 
@@ -9,15 +7,18 @@ import { getUnits, fromDisplay, toDisplay } from './units.js';
 
 /** Champs numériques du formulaire. */
 export const NUMERIC_FIELDS = [
-  'dryMass', 'propellantMass', 'diameter', 'cd', 'thrust', 'burnTime', 'isp'
+  'dryMass', 'propellantMass', 'diameter', 'cd',
+  'thrust', 'burnTime', 'isp',
+  'launchAngle', 'railLength'
 ];
 
-/** Grandeur physique associée à chaque champ (absent = sans dimension). */
+/** Grandeur physique associée à chaque champ. */
 const QUANTITIES = {
   dryMass: 'mass',
   propellantMass: 'mass',
   diameter: 'length',
-  thrust: 'force'
+  thrust: 'force',
+  railLength: 'length'
 };
 
 const LABELS = {
@@ -27,7 +28,9 @@ const LABELS = {
   cd: 'Coefficient de traînée',
   thrust: 'Poussée',
   burnTime: 'Durée de combustion',
-  isp: 'Impulsion spécifique'
+  isp: 'Impulsion spécifique',
+  launchAngle: "Angle d'inclinaison",
+  railLength: 'Longueur de guidage'
 };
 
 /**
@@ -71,6 +74,7 @@ export function readForm(form) {
   if (raw.dryMass <= 0) errors.push('La masse à vide doit être strictement positive.');
   if (raw.diameter <= 0) errors.push('Le diamètre doit être strictement positif.');
   if (raw.isp <= 0) errors.push("L'impulsion spécifique doit être strictement positive.");
+  if (raw.launchAngle > 80) errors.push("L'angle de lancement doit rester ≤ 80°.");
 
   const name = String(data.get('name') ?? '').trim() || 'Fusée sans nom';
 
@@ -83,7 +87,9 @@ export function readForm(form) {
       cd: raw.cd,
       thrust: raw.thrust,
       burnTime: raw.burnTime,
-      isp: raw.isp
+      isp: raw.isp,
+      launchAngle: raw.launchAngle,
+      railLength: raw.railLength
     },
     errors
   };
@@ -116,4 +122,6 @@ export function fillForm(form, config) {
   setQ('thrust', config.thrust ?? 0, 'force');
   set('burnTime', round(config.burnTime ?? 0, 2));
   set('isp', round(config.isp ?? 100, 1));
+  set('launchAngle', round(config.launchAngle ?? 0, 1));
+  setQ('railLength', config.railLength ?? 0, 'length');
 }

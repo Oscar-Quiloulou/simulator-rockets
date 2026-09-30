@@ -1,6 +1,6 @@
 /**
  * Lecture du formulaire Construction, calculs de structure et persistance.
- * Toutes les grandeurs manipulées ici sont en unités SI.
+ * Toutes les grandeurs physiques sont stockées en unités SI.
  * @module structure
  */
 
@@ -24,7 +24,10 @@ export const DEFAULT_STATE = {
   },
   motor: { mass: 0.15, propellant: 0.05, position: 0.06, thrust: 40, burnTime: 1.2, isp: 110 },
   payload: { mass: 0.02, position: 0.5 },
-  dragCd: 0.5
+  dragCd: 0.5,
+  launchAngle: 0,
+  railLength: 1.0,
+  launchMethod: 'rail'
 };
 
 /**
@@ -88,7 +91,10 @@ export function collect() {
       isp: val('motor-isp')
     },
     payload: { mass: M('payload-mass'), position: L('payload-position') },
-    dragCd: val('drag-cd') || 0.5
+    dragCd: val('drag-cd') || 0.5,
+    launchAngle: val('launch-angle'),
+    railLength: L('launch-rail'),
+    launchMethod: sel('launch-method') || 'rail'
   };
 }
 
@@ -163,17 +169,8 @@ export function computeStructure(input) {
   const margin = diameter > 0 ? (cg - cp) / diameter : 0;
 
   return {
-    parts,
-    totalMass,
-    cg,
-    cp,
-    margin,
-    diameter,
-    body,
-    nose,
-    fins,
-    motor,
-    payload
+    parts, totalMass, cg, cp, margin, diameter,
+    body, nose, fins, motor, payload
   };
 }
 
@@ -199,7 +196,7 @@ export function loadState() {
 }
 
 /**
- * Applique un état SI aux inputs (conversion vers l'unité d'affichage).
+ * Applique un état SI aux inputs.
  * @param {ReturnType<typeof collect>} state
  */
 export function applyState(state) {
@@ -236,10 +233,13 @@ export function applyState(state) {
   setQ('payload-mass', state.payload.mass, 'mass');
   setQ('payload-position', state.payload.position, 'length');
   setRaw('drag-cd', state.dragCd);
+  setRaw('launch-angle', state.launchAngle ?? 0);
+  setQ('launch-rail', state.railLength ?? 0, 'length');
 
   setSel('body-material', state.body.material);
   setSel('nose-material', state.nose.material);
   setSel('nose-shape', state.nose.shape);
   setSel('fin-shape', state.fins.shape);
   setSel('fin-material', state.fins.material);
+  setSel('launch-method', state.launchMethod ?? 'rail');
 }

@@ -1,6 +1,5 @@
 /**
  * Fusées pré-remplies pour le simulateur.
- * Les valeurs sont des ordres de grandeur réalistes pour l'amateurisme.
  * @module presets
  */
 
@@ -24,7 +23,9 @@ export const PRESETS = [
       cd: 0.5,
       thrust: 40,
       burnTime: 1.2,
-      isp: 110
+      isp: 110,
+      launchAngle: 0,
+      railLength: 1.0
     }
   },
   {
@@ -38,7 +39,9 @@ export const PRESETS = [
       cd: 0.5,
       thrust: 180,
       burnTime: 1.8,
-      isp: 110
+      isp: 110,
+      launchAngle: 0,
+      railLength: 1.5
     }
   },
   {
@@ -52,7 +55,9 @@ export const PRESETS = [
       cd: 0.4,
       thrust: 90,
       burnTime: 0.3,
-      isp: 15
+      isp: 15,
+      launchAngle: 0,
+      railLength: 0.5
     }
   },
   {
@@ -66,7 +71,9 @@ export const PRESETS = [
       cd: 0.45,
       thrust: 4.74,
       burnTime: 1.6,
-      isp: 80
+      isp: 80,
+      launchAngle: 0,
+      railLength: 1.0
     }
   },
   {
@@ -80,7 +87,9 @@ export const PRESETS = [
       cd: 0.5,
       thrust: 700,
       burnTime: 2.5,
-      isp: 125
+      isp: 125,
+      launchAngle: 0,
+      railLength: 2.0
     }
   }
 ];

@@ -76,7 +76,7 @@ function render() {
   const massUnit = unitLabel('mass', units);
   const lengthUnit = unitLabel('length', units);
 
-  // --- Tableau des pièces ---
+  // Tableau des pièces
   const tbody = /** @type {HTMLElement} */ ($('#parts-body'));
   tbody.textContent = '';
   for (const part of model.parts) {
@@ -92,16 +92,13 @@ function render() {
     createEl('td', { class: 'num', text: fmt(toDisplay(model.cg, 'length', units), 1) })
   ]));
 
-  // --- Statistiques principales (unités dynamiques) ---
-  $('#out-mass').textContent =
-    `${fmt(toDisplay(model.totalMass, 'mass', units), 3)} ${massUnit}`;
-  $('#out-cg').textContent =
-    `${fmt(toDisplay(model.cg, 'length', units), 1)} ${lengthUnit}`;
-  $('#out-cp').textContent =
-    `${fmt(toDisplay(model.cp, 'length', units), 1)} ${lengthUnit}`;
+  // Statistiques
+  $('#out-mass').textContent = `${fmt(toDisplay(model.totalMass, 'mass', units), 3)} ${massUnit}`;
+  $('#out-cg').textContent = `${fmt(toDisplay(model.cg, 'length', units), 1)} ${lengthUnit}`;
+  $('#out-cp').textContent = `${fmt(toDisplay(model.cp, 'length', units), 1)} ${lengthUnit}`;
   $('#out-margin').textContent = fmt(model.margin, 2);
 
-  // --- Indicateur de stabilité ---
+  // Indicateur de stabilité
   const badge = /** @type {HTMLElement} */ ($('#stability-badge'));
   const text = /** @type {HTMLElement} */ ($('#stability-text'));
 
@@ -125,6 +122,20 @@ function render() {
       'Marge < 0,5 calibre : risque de culbute. Ajoutez du poids en pointe ou agrandissez les ailerettes.';
   }
 
+  // Description du lancement
+  const info = $('#out-launch-info');
+  if (info) {
+    const isFree = input.launchMethod === 'free' || input.railLength <= 1e-6;
+    if (isFree) {
+      info.textContent = `Libre, inclinaison ${fmt(input.launchAngle, 0)}°`;
+    } else {
+      const railDisp = toDisplay(input.railLength, 'length', units);
+      const meth = input.launchMethod === 'tube' ? 'Tube' : 'Rampe';
+      info.textContent =
+        `${meth} de ${fmt(railDisp, 1)} ${lengthUnit}, inclinaison ${fmt(input.launchAngle, 0)}°`;
+    }
+  }
+
   drawDiagram(/** @type {HTMLElement} */ ($('#rocket-diagram')), model);
 }
 
@@ -142,7 +153,9 @@ function sendToSimulator() {
     cd: input.dragCd,
     thrust: input.motor.thrust,
     burnTime: input.motor.burnTime,
-    isp: input.motor.isp
+    isp: input.motor.isp,
+    launchAngle: input.launchAngle,
+    railLength: input.launchMethod === 'free' ? 0 : input.railLength
   }));
   window.location.href = 'index.html';
 }

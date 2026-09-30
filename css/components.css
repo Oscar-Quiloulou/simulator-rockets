@@ -8,9 +8,7 @@
   padding: var(--pad);
 }
 
-.card + .card {
-  margin-top: 0;
-}
+.card + .card { margin-top: 0; }
 
 .card-title {
   font-size: 15px;
@@ -43,33 +41,19 @@
   transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.05s;
 }
 
-.btn:active {
-  transform: translateY(1px);
-}
+.btn:active { transform: translateY(1px); }
 
-.btn-primary {
-  background: var(--accent);
-  color: #06263a;
-}
-
-.btn-primary:hover {
-  background: var(--accent-strong);
-}
+.btn-primary { background: var(--accent); color: #06263a; }
+.btn-primary:hover { background: var(--accent-strong); }
 
 .btn-ghost {
   background: #1b2537;
   color: var(--text);
   border-color: var(--border);
 }
+.btn-ghost:hover { background: #243149; }
 
-.btn-ghost:hover {
-  background: #243149;
-}
-
-.btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .actions {
   display: flex;
@@ -120,9 +104,7 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
 }
 
-input[type="number"] {
-  font-variant-numeric: tabular-nums;
-}
+input[type="number"] { font-variant-numeric: tabular-nums; }
 
 .errors {
   margin-top: 12px;
@@ -130,10 +112,7 @@ input[type="number"] {
   color: #fca5a5;
   display: none;
 }
-
-.errors.is-visible {
-  display: block;
-}
+.errors.is-visible { display: block; }
 
 /* ==========================================================================
    4. Statistiques
@@ -174,10 +153,7 @@ input[type="number"] {
   color: var(--text-muted);
 }
 
-.stat-hint {
-  font-size: 11.5px;
-  color: var(--text-dim);
-}
+.stat-hint { font-size: 11.5px; color: var(--text-dim); }
 
 /* ==========================================================================
    5. Avertissements
@@ -199,7 +175,7 @@ input[type="number"] {
 }
 
 /* ==========================================================================
-   6. Graphiques SVG (simulateur)
+   6. Graphiques SVG
    ========================================================================== */
 .chart-host {
   position: relative;
@@ -212,27 +188,10 @@ input[type="number"] {
   overflow: visible;
 }
 
-.chart-grid {
-  stroke: #1b2537;
-  stroke-width: 1;
-}
-
-.chart-axis {
-  stroke: #334155;
-  stroke-width: 1;
-}
-
-.chart-tick {
-  fill: var(--text-dim);
-  font-size: 11px;
-  font-family: var(--font-sans);
-}
-
-.chart-label {
-  fill: var(--text-muted);
-  font-size: 12px;
-  font-family: var(--font-sans);
-}
+.chart-grid { stroke: #1b2537; stroke-width: 1; }
+.chart-axis { stroke: #334155; stroke-width: 1; }
+.chart-tick { fill: var(--text-dim); font-size: 11px; font-family: var(--font-sans); }
+.chart-label { fill: var(--text-muted); font-size: 12px; font-family: var(--font-sans); }
 
 .chart-crosshair {
   stroke: var(--accent);
@@ -255,12 +214,20 @@ input[type="number"] {
   box-shadow: var(--shadow);
 }
 
-/* ==========================================================================
-   7. Builder — tableau des pièces & indicateur de stabilité
-   ========================================================================== */
-.parts-table {
-  font-size: 13.5px;
+.chart-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-style: italic;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
 }
+
+/* ==========================================================================
+   7. Builder — tableau & stabilité
+   ========================================================================== */
+.parts-table { font-size: 13.5px; }
 
 .parts-table th,
 .parts-table td {
@@ -304,40 +271,25 @@ input[type="number"] {
   border-color: rgba(34, 197, 94, 0.5);
   background: rgba(34, 197, 94, 0.1);
 }
-
 .stability-badge[data-level="warn"] {
   color: var(--warn);
   border-color: rgba(245, 158, 11, 0.5);
   background: rgba(245, 158, 11, 0.1);
 }
-
 .stability-badge[data-level="bad"] {
   color: #f87171;
   border-color: rgba(220, 38, 38, 0.5);
   background: rgba(220, 38, 38, 0.12);
 }
 
-.stability-text {
-  font-size: 13px;
-  color: var(--text-muted);
-}
+.stability-text { font-size: 13px; color: var(--text-muted); }
 
 /* ==========================================================================
    8. Contenu éditorial (about / advanced)
    ========================================================================== */
-.prose h2 {
-  font-size: 20px;
-  margin: 28px 0 10px;
-}
-
-.prose h2:first-child {
-  margin-top: 0;
-}
-
-.prose h3 {
-  font-size: 16px;
-  margin: 20px 0 6px;
-}
+.prose h2 { font-size: 20px; margin: 28px 0 10px; }
+.prose h2:first-child { margin-top: 0; }
+.prose h3 { font-size: 16px; margin: 20px 0 6px; }
 
 .prose p,
 .prose li {
@@ -345,14 +297,8 @@ input[type="number"] {
   margin-bottom: 10px;
 }
 
-.prose ul {
-  list-style: disc;
-  padding-left: 22px;
-}
-
-.prose li {
-  margin-bottom: 6px;
-}
+.prose ul { list-style: disc; padding-left: 22px; }
+.prose li { margin-bottom: 6px; }
 
 .prose code {
   background: var(--surface-alt);
@@ -424,9 +370,7 @@ input[type="number"] {
 /* ==========================================================================
    10. Paramètres — blocs d'unités
    ========================================================================== */
-.unit-card {
-  margin-bottom: 16px;
-}
+.unit-card { margin-bottom: 16px; }
 
 .radio-row {
   display: flex;
@@ -447,14 +391,8 @@ input[type="number"] {
   transition: border-color 0.15s, background 0.15s;
 }
 
-.radio-pill:hover {
-  border-color: var(--accent);
-}
-
-.radio-pill input[type="radio"] {
-  accent-color: var(--accent);
-  margin: 0;
-}
+.radio-pill:hover { border-color: var(--accent); }
+.radio-pill input[type="radio"] { accent-color: var(--accent); margin: 0; }
 
 .radio-pill:has(input:checked) {
   border-color: var(--accent);
@@ -476,18 +414,10 @@ input[type="number"] {
 }
 
 /* ==========================================================================
-   11. Texte de prose simplifié (help)
+   11. Prose simplifiée (help)
    ========================================================================== */
-.prose-help h1 {
-  font-size: 22px;
-  margin-bottom: 14px;
-}
-
-.prose-help h2 {
-  font-size: 18px;
-  margin: 24px 0 8px;
-  color: var(--accent);
-}
+.prose-help h1 { font-size: 22px; margin-bottom: 14px; }
+.prose-help h2 { font-size: 18px; margin: 24px 0 8px; color: var(--accent); }
 
 .prose-help p,
 .prose-help li {
@@ -495,14 +425,8 @@ input[type="number"] {
   margin-bottom: 10px;
 }
 
-.prose-help ul {
-  list-style: disc;
-  padding-left: 22px;
-}
-
-.prose-help strong {
-  color: var(--text);
-}
+.prose-help ul { list-style: disc; padding-left: 22px; }
+.prose-help strong { color: var(--text); }
 
 .prose-help a {
   color: var(--accent);
@@ -511,7 +435,7 @@ input[type="number"] {
 }
 
 /* ==========================================================================
-   12. Diagramme de la page Construction — mise en évidence
+   12. Diagramme (builder) — highlight + guide
    ========================================================================== */
 .dgm-shape {
   transition: stroke 0.15s ease, stroke-width 0.15s ease, filter 0.15s ease;
@@ -523,13 +447,8 @@ input[type="number"] {
   filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.75));
 }
 
-.dgm-guide {
-  display: none;
-  pointer-events: none;
-}
-.dgm-guide.is-visible {
-  display: block;
-}
+.dgm-guide { display: none; pointer-events: none; }
+.dgm-guide.is-visible { display: block; }
 
 .diagram-hint {
   margin-top: 12px;
@@ -539,8 +458,15 @@ input[type="number"] {
   font-style: italic;
 }
 
-/* Contrainte de taille : le SVG ne doit jamais dépasser la hauteur du viewport.
-   On écrase width:100% héritée de .chart pour préserver le ratio portrait. */
+.diagram-launch {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.diagram-launch strong { color: var(--accent); }
+
 #rocket-diagram {
   display: flex;
   justify-content: center;
@@ -554,10 +480,8 @@ input[type="number"] {
   margin-inline: auto;
 }
 
-/* Le label complet devient « cliquable » quand il pilote le schéma */
-.field[data-diagram] {
-  cursor: help;
-}
+.field[data-diagram] { cursor: help; }
+
 .field[data-diagram]:hover .field-label,
 .field[data-diagram]:focus-within .field-label {
   color: var(--accent);
@@ -565,11 +489,9 @@ input[type="number"] {
 }
 
 /* ==========================================================================
-   13. Colonne « Construction » collante (desktop uniquement)
+   13. Colonne Construction collante (desktop)
    ========================================================================== */
-.layout--builder {
-  align-items: start;
-}
+.layout--builder { align-items: start; }
 
 @media (min-width: 769px) {
   .layout--builder .col-right {
@@ -583,14 +505,10 @@ input[type="number"] {
     scrollbar-color: #334155 transparent;
   }
 
-  .layout--builder .col-right::-webkit-scrollbar {
-    width: 6px;
-  }
+  .layout--builder .col-right::-webkit-scrollbar { width: 6px; }
   .layout--builder .col-right::-webkit-scrollbar-thumb {
     background: #334155;
     border-radius: 3px;
   }
-  .layout--builder .col-right::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  .layout--builder .col-right::-webkit-scrollbar-track { background: transparent; }
 }

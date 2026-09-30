@@ -65,7 +65,7 @@
         </div>
         <label class="field" data-diagram="body-thickness">
           <span class="field-label" data-tip="Épaisseur de la paroi. Sert à calculer le volume de matière." tabindex="0">
-            Épaisseur de paroi <span class="field-unit" data-unit-for="length">(mm)</span>
+            Épaisseur <span class="field-unit" data-unit-for="length">(mm)</span>
           </span>
           <input type="number" id="body-thickness" value="2" min="0" step="0.1">
         </label>
@@ -73,11 +73,11 @@
         <h3 class="chart-title">Coiffe</h3>
         <div class="field-row">
           <label class="field" data-diagram="nose-material">
-            <span class="field-label" data-tip="Matériau de la pointe. Le PLA et le balsa suffisent pour de petites fusées." tabindex="0">Matériau</span>
+            <span class="field-label" data-tip="Matériau de la pointe. PLA et balsa suffisent pour de petites fusées." tabindex="0">Matériau</span>
             <select id="nose-material" name="nose-material"></select>
           </label>
           <label class="field" data-diagram="nose-shape">
-            <span class="field-label" data-tip="Le cône est plus simple à fabriquer, l'ogive est légèrement plus aérodynamique." tabindex="0">Forme</span>
+            <span class="field-label" data-tip="Cône = plus simple à fabriquer, ogive = légèrement plus aérodynamique." tabindex="0">Forme</span>
             <select id="nose-shape" name="nose-shape">
               <option value="cone">Cône</option>
               <option value="ogive" selected>Ogive</option>
@@ -86,13 +86,13 @@
         </div>
         <div class="field-row">
           <label class="field" data-diagram="nose-length">
-            <span class="field-label" data-tip="Longueur de la pointe, de sa base jusqu'à la pointe." tabindex="0">
+            <span class="field-label" data-tip="Longueur de la pointe." tabindex="0">
               Longueur <span class="field-unit" data-unit-for="length">(mm)</span>
             </span>
             <input type="number" id="nose-length" value="120" min="0" step="1">
           </label>
           <label class="field" data-diagram="nose-diameter">
-            <span class="field-label" data-tip="Diamètre de la base de la coiffe. Idéalement égal au diamètre du corps." tabindex="0">
+            <span class="field-label" data-tip="Diamètre de la base de la coiffe. Idéalement égal au corps." tabindex="0">
               Ø base <span class="field-unit" data-unit-for="length">(mm)</span>
             </span>
             <input type="number" id="nose-diameter" value="50" min="1" step="0.1">
@@ -116,7 +116,7 @@
         </div>
         <div class="field-row">
           <label class="field" data-diagram="fin-height">
-            <span class="field-label" data-tip="Corde de l'ailerette (dimension le long du corps)." tabindex="0">
+            <span class="field-label" data-tip="Corde (dimension le long du corps)." tabindex="0">
               Corde <span class="field-unit" data-unit-for="length">(mm)</span>
             </span>
             <input type="number" id="fin-height" value="80" min="0" step="1">
@@ -136,7 +136,7 @@
             <input type="number" id="fin-thickness" value="3" min="0" step="0.1">
           </label>
           <label class="field" data-diagram="fin-material">
-            <span class="field-label" data-tip="Le balsa est très léger mais fragile. Le contreplaqué est un bon compromis." tabindex="0">Matériau</span>
+            <span class="field-label" data-tip="Le balsa est très léger mais fragile ; le contreplaqué est un bon compromis." tabindex="0">Matériau</span>
             <select id="fin-material" name="fin-material"></select>
           </label>
         </div>
@@ -145,19 +145,19 @@
         <div class="field-row">
           <label class="field" data-diagram="motor-mass">
             <span class="field-label" data-tip="Masse totale du moteur, carburant inclus." tabindex="0">
-              Masse totale <span class="field-unit" data-unit-for="mass">(g)</span>
+              Masse <span class="field-unit" data-unit-for="mass">(g)</span>
             </span>
             <input type="number" id="motor-mass" value="150" min="0" step="0.1">
           </label>
           <label class="field" data-diagram="motor-propellant">
-            <span class="field-label" data-tip="Part de la masse totale qui est du propergol (brûlé pendant le vol)." tabindex="0">
+            <span class="field-label" data-tip="Part de la masse totale qui est du propergol." tabindex="0">
               dont propergol <span class="field-unit" data-unit-for="mass">(g)</span>
             </span>
             <input type="number" id="motor-propellant" value="50" min="0" step="0.1">
           </label>
         </div>
         <label class="field" data-diagram="motor-position">
-          <span class="field-label" data-tip="Distance entre la base de la fusée et le centre de gravité du moteur. Le schéma affiche un guide vertical." tabindex="0">
+          <span class="field-label" data-tip="Distance entre la base et le centre de gravité du moteur." tabindex="0">
             Position depuis la base <span class="field-unit" data-unit-for="length">(mm)</span>
           </span>
           <input type="number" id="motor-position" value="60" min="0" step="1">
@@ -175,29 +175,51 @@
           </label>
         </div>
         <label class="field" data-diagram="motor-isp">
-          <span class="field-label" data-tip="Impulsion spécifique — efficacité du couple carburant/comburant." tabindex="0">Isp (s)</span>
+          <span class="field-label" data-tip="Impulsion spécifique — efficacité du carburant." tabindex="0">Isp (s)</span>
           <input type="number" id="motor-isp" value="110" min="1" step="1">
         </label>
 
         <h3 class="chart-title">Charge utile</h3>
         <div class="field-row">
           <label class="field" data-diagram="payload-mass">
-            <span class="field-label" data-tip="Masse de l'électronique, du parachute, de la caméra… placée dans la coiffe." tabindex="0">
+            <span class="field-label" data-tip="Masse de l'électronique, parachute, caméra…" tabindex="0">
               Masse <span class="field-unit" data-unit-for="mass">(g)</span>
             </span>
             <input type="number" id="payload-mass" value="20" min="0" step="0.1">
           </label>
           <label class="field" data-diagram="payload-position">
-            <span class="field-label" data-tip="Distance entre la base et le centre de gravité de la charge utile. Le schéma affiche un guide vertical." tabindex="0">
-              Position depuis la base <span class="field-unit" data-unit-for="length">(mm)</span>
+            <span class="field-label" data-tip="Distance entre la base et le centre de gravité de la charge utile." tabindex="0">
+              Position <span class="field-unit" data-unit-for="length">(mm)</span>
             </span>
             <input type="number" id="payload-position" value="500" min="0" step="1">
           </label>
         </div>
 
+        <h3 class="chart-title">Lancement</h3>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label" data-tip="Rampe = guidage sur rail. Tube = comme un bazooka. Libre = lancé à la main, sans guidage." tabindex="0">Méthode</span>
+            <select id="launch-method" name="launch-method">
+              <option value="rail">Rampe / rail</option>
+              <option value="tube">Tube</option>
+              <option value="free">Libre</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label" data-tip="Inclinaison depuis la verticale. 0° = tir droit vers le haut." tabindex="0">Angle (°)</span>
+            <input type="number" id="launch-angle" value="0" min="0" max="80" step="1">
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label" data-tip="Longueur sur laquelle la fusée est guidée. 0 = lancement libre." tabindex="0">
+            Longueur de guidage <span class="field-unit" data-unit-for="length">(mm)</span>
+          </span>
+          <input type="number" id="launch-rail" value="1000" min="0" step="10">
+        </label>
+
         <h3 class="chart-title">Aérodynamique</h3>
         <label class="field">
-          <span class="field-label" data-tip="Coefficient de traînée de la fusée assemblée. 0,4 = soignée ; 0,6–0,8 = forme brute." tabindex="0">
+          <span class="field-label" data-tip="Coefficient de traînée global. 0,4 = soignée ; 0,6–0,8 = forme brute." tabindex="0">
             Cd global (—)
           </span>
           <input type="number" id="drag-cd" value="0.5" min="0.01" step="0.01">
@@ -213,16 +235,17 @@
 
     <section class="col-right">
 
-      <!-- Schéma : toujours visible (sticky) -->
       <div class="card">
         <h2 class="card-title">Schéma</h2>
         <div id="rocket-diagram"></div>
         <p class="diagram-hint">
           Survolez un champ du formulaire : la mesure correspondante s'illumine en jaune.
         </p>
+        <p class="diagram-launch">
+          <strong>Lancement :</strong> <span id="out-launch-info">—</span>
+        </p>
       </div>
 
-      <!-- Centrages -->
       <div class="card">
         <h2 class="card-title">Masse &amp; centrages</h2>
         <div class="stat-grid">
@@ -235,11 +258,11 @@
             <span class="stat-value" id="out-cg">—</span>
           </div>
           <div class="stat">
-            <span class="stat-label" data-tip="Centre de poussée aérodynamique : point où s'appliquent les forces de l'air.">CP (base)</span>
+            <span class="stat-label" data-tip="Centre de poussée : point où s'appliquent les forces aérodynamiques.">CP (base)</span>
             <span class="stat-value" id="out-cp">—</span>
           </div>
           <div class="stat">
-            <span class="stat-label" data-tip="Marge statique = (CG − CP) / diamètre. Il faut CP derrière CG, donc marge &gt; 0. Idéal ≥ 1 calibre.">Marge statique</span>
+            <span class="stat-label" data-tip="Marge statique = (CG − CP) / diamètre. Idéal ≥ 1 calibre.">Marge statique</span>
             <span class="stat-value" id="out-margin">—</span>
           </div>
         </div>
@@ -250,19 +273,14 @@
         </div>
       </div>
 
-      <!-- Tableau des pièces -->
       <div class="card">
         <h3 class="chart-title">Détail des pièces</h3>
         <table class="parts-table">
           <thead>
             <tr>
               <th scope="col">Pièce</th>
-              <th scope="col" class="num">
-                Masse <span class="field-unit" data-unit-for="mass">(g)</span>
-              </th>
-              <th scope="col" class="num">
-                CG <span class="field-unit" data-unit-for="length">(mm)</span>
-              </th>
+              <th scope="col" class="num">Masse <span class="field-unit" data-unit-for="mass">(g)</span></th>
+              <th scope="col" class="num">CG <span class="field-unit" data-unit-for="length">(mm)</span></th>
             </tr>
           </thead>
           <tbody id="parts-body"></tbody>

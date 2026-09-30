@@ -1,48 +1,91 @@
 /**
- * Moteur de simulation balistique 1D (vol vertical) pour fusée artisanale.
+ * Moteur de simulation balistique 2D (vol dans un plan vertical) pour fusée.
  * Intégration numérique par Runge-Kutta d'ordre 4.
  *
  * Équations utilisées :
  *  - Newton :        m·a = T + D + W
- *  - Traînée :       D = -0.5 · ρ(y) · v · |v| · Cd · A
+ *  - Traînée :       D = -0.5 · ρ(y) · |v| · v · Cd · A   (vectorielle)
  *  - Atmosphère :    ρ(y) = ρ0 · exp(-y / H)
  *  - Pesanteur :     g(y) = g0 · (R / (R + y))²
  *  - Débit massique :ṁ = -T / (Isp · g0)
  *  - Tsiolkovsky :   Δv = Isp · g0 · ln(m0 / mf)
  *
+ * Configuration de lancement :
+ *  - launchAngle : inclinaison depuis la verticale (°). 0 = tir vertical.
+ *  - railLength  : longueur de guidage (m). 0 = lancement libre.
+ *
+ * Hypothèse de vol libre : le vecteur poussée reste aligné sur la vitesse,
+ * car la marge statique positive fait que la fusée s'aligne sur sa trajectoire.
+ *
  * @module physics
  */
 
-/** Pesanteur standard au niveau de la mer (m/s²). */
+/** Pesanteur standard (m/s²). */
 export const G0 = 9.80665;
-/** Rayon moyen de la Terre (m). */
+/** Rayon moyen terrestre (m). */
 export const R_EARTH = 6371000;
 /** Masse volumique de l'air au niveau de la mer (kg/m³). */
 export const RHO0 = 1.225;
-/** Hauteur d'échelle de l'atmosphère isotherme (m). */
+/** Hauteur d'échelle atmosphérique (m). */
 export const H_SCALE = 8500;
 /** Vitesse du son au niveau de la mer (m/s). */
 export const C_SOUND = 340;
 
 /**
+ * Pesanteur en fonction de l'altitude.
+ * @param {number} y Altitude (m)
+ * @returns {number} Accélération (m/s²)
+ */
+export function gravityAt(y) {
+  const ratio = R_EARTH / (R_EARTH + Math.max(y, -R_EARTH * 0.5));
+  return G0 * ratio * ratio;
+}
+
+/**
+ * Masse volumique de l'air — atmosphère isotherme.
+ * @param {number} y Altitude (m)
+ * @returns {number} Masse volumique (kg/m³)
+ */
+export function densityAt(y) {
+  if (y <= 0) return RHO0;
+  return RHO0 * Math.exp(-y / H_SCALE);
+}
+
+/**
+ * Vecteur unitaire de la direction de lancement.
+ * 0° = vertical vers le haut, 90° = horizontal.
+ * @param {number} angleDeg
+ * @returns {{x: number, y: number}}
+ */
+export function launchDirection(angleDeg) {
+  const a = (Math.max(0, Math.min(90, angleDeg)) * Math.PI) / 180;
+  return { x: Math.sin(a), y: Math.cos(a) };
+}
+
+/**
  * @typedef {Object} RocketConfig
- * @property {string} name            Nom de la fusée
- * @property {number} dryMass         Masse à vide (kg)
- * @property {number} propellantMass  Masse de propergol (kg)
- * @property {number} diameter        Diamètre du corps (m)
- * @property {number} cd              Coefficient de traînée
- * @property {number} thrust          Poussée moyenne (N)
- * @property {number} burnTime        Durée de combustion (s)
- * @property {number} isp             Impulsion spécifique (s)
+ * @property {string} name
+ * @property {number} dryMass
+ * @property {number} propellantMass
+ * @property {number} diameter
+ * @property {number} cd
+ * @property {number} thrust
+ * @property {number} burnTime
+ * @property {number} isp
+ * @property {number} [launchAngle=0] Inclinaison depuis la verticale (°)
+ * @property {number} [railLength=0]  Longueur de guidage (m)
  */
 
 /**
  * @typedef {Object} Sample
- * @property {number} t    Instant (s)
+ * @property {number} t
+ * @property {number} x    Distance horizontale (m)
  * @property {number} y    Altitude (m)
- * @property {number} v    Vitesse verticale (m/s)
- * @property {number} a    Accélération verticale (m/s²)
- * @property {number} m    Masse courante (kg)
+ * @property {number} vx   Vitesse horizontale (m/s)
+ * @property {number} vy   Vitesse verticale (m/s)
+ * @property {number} v    Norme de la vitesse (m/s)
+ * @property {number} a    Norme de l'accélération (m/s²)
+ * @property {number} m    Masse (kg)
  * @property {number} mach Nombre de Mach
  */
 
@@ -56,30 +99,12 @@ export const C_SOUND = 340;
  * @property {number} flightTime
  * @property {number} maxMach
  * @property {number} deltaV
+ * @property {number} downrange
+ * @property {number} launchTime
  */
 
 /**
- * Pesanteur en fonction de l'altitude — loi de gravitation newtonienne.
- * @param {number} y Altitude (m)
- * @returns {number} Accélération de la pesanteur (m/s²)
- */
-export function gravityAt(y) {
-  const ratio = R_EARTH / (R_EARTH + Math.max(y, -R_EARTH * 0.5));
-  return G0 * ratio * ratio;
-}
-
-/**
- * Masse volumique de l'air — modèle d'atmosphère isotherme exponentiel.
- * @param {number} y Altitude (m)
- * @returns {number} Masse volumique (kg/m³)
- */
-export function densityAt(y) {
-  if (y <= 0) return RHO0;
-  return RHO0 * Math.exp(-y / H_SCALE);
-}
-
-/**
- * Normalise et borne une configuration utilisateur.
+ * Normalise et borne la configuration.
  * @param {Partial<RocketConfig>} cfg
  * @returns {RocketConfig}
  */
@@ -92,16 +117,18 @@ function normalizeConfig(cfg) {
     cd: Math.max(0.01, Number(cfg.cd) || 0.5),
     thrust: Math.max(0, Number(cfg.thrust) || 0),
     burnTime: Math.max(0, Number(cfg.burnTime) || 0),
-    isp: Math.max(1, Number(cfg.isp) || 100)
+    isp: Math.max(1, Number(cfg.isp) || 100),
+    launchAngle: Math.max(0, Math.min(80, Number(cfg.launchAngle) || 0)),
+    railLength: Math.max(0, Number(cfg.railLength) || 0)
   };
 }
 
 /**
- * Masse courante de la fusée à l'instant t (combustion linéaire).
+ * Masse courante à l'instant t (combustion linéaire).
  * @param {number} t
  * @param {RocketConfig} cfg
- * @param {number} m0 Masse totale initiale (kg)
- * @param {number} mdot Débit massique (kg/s)
+ * @param {number} m0
+ * @param {number} mdot
  * @returns {number}
  */
 function massAt(t, cfg, m0, mdot) {
@@ -110,66 +137,80 @@ function massAt(t, cfg, m0, mdot) {
 }
 
 /**
- * Accélération verticale : m·a = T + D + W.
- * @param {number} t
- * @param {number} y
- * @param {number} v
- * @param {number} m
- * @param {RocketConfig} cfg
- * @returns {number} Accélération (m/s²)
+ * Accélération en vol libre (2D). Poussée alignée sur la vitesse.
+ * @returns {[number, number]}
  */
-function accelAt(t, y, v, m, cfg) {
+function accelFree(t, x, y, vx, vy, m, cfg) {
+  const speed = Math.hypot(vx, vy);
   const area = Math.PI * (cfg.diameter / 2) ** 2;
   const thrust = t < cfg.burnTime ? cfg.thrust : 0;
-  const drag = -0.5 * densityAt(y) * v * Math.abs(v) * cfg.cd * area;
-  const weight = -m * gravityAt(y);
-  return (thrust + drag + weight) / m;
+
+  let ux;
+  let uy;
+  if (speed > 1e-3) {
+    ux = vx / speed;
+    uy = vy / speed;
+  } else {
+    const d = launchDirection(cfg.launchAngle);
+    ux = d.x;
+    uy = d.y;
+  }
+
+  const dragMag = -0.5 * densityAt(y) * speed * cfg.cd * area;
+  const ax = (thrust * ux + dragMag * vx) / m;
+  const ay = (thrust * uy + dragMag * vy - m * gravityAt(y)) / m;
+  return [ax, ay];
 }
 
 /**
- * Dérivée de l'état [y, v] pour l'intégrateur.
- * @param {number} t
- * @param {[number, number]} state
- * @param {RocketConfig} cfg
- * @param {number} m0
- * @param {number} mdot
+ * Accélération sur la rampe : mouvement contraint à la direction de lancement.
  * @returns {[number, number]}
  */
+function accelRail(t, x, y, vx, vy, m, cfg, dir) {
+  const speedAlong = vx * dir.x + vy * dir.y;
+  const area = Math.PI * (cfg.diameter / 2) ** 2;
+  const thrust = t < cfg.burnTime ? cfg.thrust : 0;
+  const dragMag = -0.5 * densityAt(y) * Math.abs(speedAlong) * speedAlong * cfg.cd * area;
+  const fParallel = thrust + dragMag - m * gravityAt(y) * dir.y;
+  const aParallel = fParallel / m;
+  return [aParallel * dir.x, aParallel * dir.y];
+}
+
+/**
+ * Dérivée de l'état [x, y, vx, vy].
+ */
 function derivative(t, state, cfg, m0, mdot) {
+  const [x, y, vx, vy] = state;
   const m = massAt(t, cfg, m0, mdot);
-  return [state[1], accelAt(t, state[0], state[1], m, cfg)];
+  const dir = launchDirection(cfg.launchAngle);
+  const proj = x * dir.x + y * dir.y;
+  const onRail = cfg.railLength > 1e-6 && proj < cfg.railLength - 1e-6;
+  const [ax, ay] = onRail
+    ? accelRail(t, x, y, vx, vy, m, cfg, dir)
+    : accelFree(t, x, y, vx, vy, m, cfg);
+  return [vx, vy, ax, ay];
 }
 
 /**
  * Une étape de Runge-Kutta d'ordre 4.
  * @param {number} t
- * @param {[number, number]} s
+ * @param {number[]} s
  * @param {number} dt
- * @param {RocketConfig} cfg
- * @param {number} m0
- * @param {number} mdot
- * @returns {[number, number]} Nouvel état
+ * @returns {number[]}
  */
 function rk4Step(t, s, dt, cfg, m0, mdot) {
   const k1 = derivative(t, s, cfg, m0, mdot);
-
-  const s2 = [s[0] + 0.5 * dt * k1[0], s[1] + 0.5 * dt * k1[1]];
+  const s2 = s.map((v, i) => v + 0.5 * dt * k1[i]);
   const k2 = derivative(t + 0.5 * dt, s2, cfg, m0, mdot);
-
-  const s3 = [s[0] + 0.5 * dt * k2[0], s[1] + 0.5 * dt * k2[1]];
+  const s3 = s.map((v, i) => v + 0.5 * dt * k2[i]);
   const k3 = derivative(t + 0.5 * dt, s3, cfg, m0, mdot);
-
-  const s4 = [s[0] + dt * k3[0], s[1] + dt * k3[1]];
+  const s4 = s.map((v, i) => v + dt * k3[i]);
   const k4 = derivative(t + dt, s4, cfg, m0, mdot);
-
-  return [
-    s[0] + (dt / 6) * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]),
-    s[1] + (dt / 6) * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1])
-  ];
+  return s.map((v, i) => v + (dt / 6) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
 }
 
 /**
- * Réduit le nombre d'échantillons pour l'affichage graphique.
+ * Réduit le nombre d'échantillons pour l'affichage.
  * @param {Sample[]} samples
  * @param {number} maxPoints
  * @returns {Sample[]}
@@ -185,10 +226,10 @@ function downsample(samples, maxPoints) {
 }
 
 /**
- * Simule le vol vertical complet d'une fusée.
- * @param {RocketConfig} config Configuration de la fusée
+ * Simule le vol complet.
+ * @param {RocketConfig} config
  * @param {number} [dt=0.01] Pas de temps (s)
- * @param {number} [maxT=600] Durée maximale simulée (s)
+ * @param {number} [maxT=600] Durée max (s)
  * @returns {SimulationResult}
  */
 export function simulate(config, dt = 0.01, maxT = 600) {
@@ -201,71 +242,80 @@ export function simulate(config, dt = 0.01, maxT = 600) {
   const raw = [];
 
   let t = 0;
-  let y = 0;
-  let v = 0;
+  /** @type {number[]} */
+  let state = [0, 0, 0, 0];
   let apogee = 0;
   let apogeeTime = 0;
-  let maxVelocity = 0;
-  let maxAcceleration = -Infinity;
+  let maxSpeed = 0;
+  let maxAccel = 0;
   let maxMach = 0;
-  let airborne = false;
+  let launchTime = null;
+  let maxX = 0;
   let nextSample = 0;
 
   while (t < maxT) {
+    const [x, y, vx, vy] = state;
     const m = massAt(t, cfg, m0, mdot);
-    const a = accelAt(t, y, v, m, cfg);
+    const speed = Math.hypot(vx, vy);
+    const dir = launchDirection(cfg.launchAngle);
+    const proj = x * dir.x + y * dir.y;
+    const onRail = cfg.railLength > 1e-6 && proj < cfg.railLength - 1e-6;
+    const [ax, ay] = onRail
+      ? accelRail(t, x, y, vx, vy, m, cfg, dir)
+      : accelFree(t, x, y, vx, vy, m, cfg);
+    const aMag = Math.hypot(ax, ay);
 
     if (t >= nextSample - 1e-9) {
-      raw.push({ t, y, v, a, m, mach: Math.abs(v) / C_SOUND });
+      raw.push({ t, x, y, vx, vy, v: speed, a: aMag, m, mach: speed / C_SOUND });
       nextSample += sampleDt;
     }
 
-    if (y > apogee) {
-      apogee = y;
-      apogeeTime = t;
-    }
-    const speed = Math.abs(v);
-    if (speed > maxVelocity) maxVelocity = speed;
-    if (a > maxAcceleration) maxAcceleration = a;
+    if (y > apogee) { apogee = y; apogeeTime = t; }
+    if (speed > maxSpeed) maxSpeed = speed;
+    if (aMag > maxAccel) maxAccel = aMag;
     if (speed / C_SOUND > maxMach) maxMach = speed / C_SOUND;
+    if (x > maxX) maxX = x;
+    if (launchTime === null && y > 0.01) launchTime = t;
 
-    const next = rk4Step(t, [y, v], dt, cfg, m0, mdot);
+    state = rk4Step(t, state, dt, cfg, m0, mdot);
     t += dt;
-    y = next[0];
-    v = next[1];
 
-    if (y > 1e-6) airborne = true;
-    if (airborne && y <= 0 && v < 0) {
-      y = 0;
-      break;
+    if (state[1] < 0) {
+      state[1] = 0;
+      if (state[3] < 0) state[3] = 0;
     }
-    if (!airborne && t > 1) break;
-    if (!Number.isFinite(y) || !Number.isFinite(v)) {
-      y = 0;
-      v = 0;
-      break;
-    }
+
+    if (launchTime !== null && state[1] <= 0 && state[3] < 0) break;
+    if (launchTime === null && t > 5) break;
+    if (!Number.isFinite(state[0]) || !Number.isFinite(state[1]) ||
+        !Number.isFinite(state[2]) || !Number.isFinite(state[3])) break;
   }
 
-  const yEnd = Math.max(0, y);
-  const mEnd = massAt(t, cfg, m0, mdot);
+  const [fx, fy, fvx, fvy] = state;
+  const fv = Math.hypot(fvx, fvy);
+  const fm = massAt(t, cfg, m0, mdot);
+  const fdir = launchDirection(cfg.launchAngle);
+  const fproj = fx * fdir.x + fy * fdir.y;
+  const fonRail = cfg.railLength > 1e-6 && fproj < cfg.railLength - 1e-6;
+  const [fax, fay] = fonRail
+    ? accelRail(t, fx, fy, fvx, fvy, fm, cfg, fdir)
+    : accelFree(t, fx, fy, fvx, fvy, fm, cfg);
+
   raw.push({
-    t,
-    y: yEnd,
-    v,
-    a: accelAt(t, yEnd, v, mEnd, cfg),
-    m: mEnd,
-    mach: Math.abs(v) / C_SOUND
+    t, x: fx, y: Math.max(0, fy), vx: fvx, vy: fvy, v: fv,
+    a: Math.hypot(fax, fay), m: fm, mach: fv / C_SOUND
   });
 
   return {
     samples: downsample(raw, 2500),
     apogee: Math.max(0, apogee),
     apogeeTime,
-    maxVelocity,
-    maxAcceleration: Number.isFinite(maxAcceleration) ? maxAcceleration : 0,
+    maxVelocity: maxSpeed,
+    maxAcceleration: maxAccel,
     flightTime: t,
     maxMach,
-    deltaV: cfg.isp * G0 * Math.log(m0 / cfg.dryMass)
+    deltaV: cfg.isp * G0 * Math.log(m0 / cfg.dryMass),
+    downrange: Math.max(maxX, fx),
+    launchTime: launchTime ?? 0
   };
 }

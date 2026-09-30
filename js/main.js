@@ -1,5 +1,5 @@
 /**
- * Point d'entrée du simulateur : wiring formulaire, presets, unités, graphiques.
+ * Point d'entrée du simulateur : formulaire, presets, unités, graphiques.
  * @module main
  */
 
@@ -9,7 +9,7 @@ import { readForm, fillForm } from './form.js';
 import { renderResults } from './results.js';
 import { renderChart } from './charts.js';
 import { getUnits, toDisplay, unitLabel, refreshUnitLabels } from './units.js';
-import { $, on, debounce } from './ui.js';
+import { $, on, debounce, createEl } from './ui.js';
 
 const STORAGE_BUILDER = 'rocket-simulator:config';
 const STORAGE_LAST = 'rocket-simulator:last-config';
@@ -18,13 +18,6 @@ const form = /** @type {HTMLFormElement} */ ($('#rocket-form'));
 const presetSelect = /** @type {HTMLSelectElement} */ ($('#preset-select'));
 const errorBox = /** @type {HTMLElement} */ ($('#form-errors'));
 const resultsHost = /** @type {HTMLElement} */ ($('#results'));
-
-/** Définition des trois graphiques. */
-const CHART_DEFS = [
-  { host: '#chart-altitude', yKey: 'y', base: 'Altitude', quantity: 'altitude', unit: 'm', color: '#38bdf8' },
-  { host: '#chart-velocity', yKey: 'v', base: 'Vitesse', quantity: 'velocity', unit: 'm/s', color: '#22c55e' },
-  { host: '#chart-acceleration', yKey: 'a', base: 'Accélération', quantity: null, unit: 'm/s²', color: '#f59e0b' }
-];
 
 /**
  * @param {string[]} errors
@@ -35,11 +28,11 @@ function showErrors(errors) {
 }
 
 /**
- * Convertit un échantillon dans l'unité d'affichage pour le graphique.
- * @param {import('./physics.js').Sample[]} samples
+ * Convertit un champ d'un échantillon vers l'unité d'affichage.
+ * @param {Object[]} samples
  * @param {string} key
  * @param {?string} quantity
- * @returns {import('./physics.js').Sample[]}
+ * @returns {Object[]}
  */
 function convertSamples(samples, key, quantity) {
   if (!quantity) return samples;
@@ -48,8 +41,58 @@ function convertSamples(samples, key, quantity) {
 }
 
 /**
- * Exécute la simulation, met à jour affichages et graphiques.
+ * Rendu des 4 graphiques.
+ * @param {import('./physics.js').SimulationResult} result
  */
+function renderCharts(result) {
+  const units = getUnits();
+  const altUnit = unitLabel('altitude', units);
+  const velUnit = unitLabel('velocity', units);
+
+  renderChart($('#chart-altitude'), convertSamples(result.samples, 'y', 'altitude'), {
+    xKey: 't', yKey: 'y',
+    xLabel: 'Temps (s)', yLabel: `Altitude (${altUnit})`,
+    unit: altUnit, xUnit: 's', color: '#38bdf8'
+  });
+
+  renderChart($('#chart-velocity'), convertSamples(result.samples, 'v', 'velocity'), {
+    xKey: 't', yKey: 'v',
+    xLabel: 'Temps (s)', yLabel: `Vitesse (${velUnit})`,
+    unit: velUnit, xUnit: 's', color: '#22c55e'
+  });
+
+  renderChart($('#chart-acceleration'), result.samples, {
+    xKey: 't', yKey: 'a',
+    xLabel: 'Temps (s)', yLabel: 'Accélération (m/s²)',
+    unit: 'm/s²', xUnit: 's', color: '#f59e0b'
+  });
+
+  // Trajectoire (x vs y) — mêmes unités sur les deux axes
+  const trajHost = $('#chart-trajectory');
+  trajHost.textContent = '';
+  const trajSamples = result.samples.map((s) => ({
+    ...s,
+    x: toDisplay(s.x, 'altitude', units),
+    y: toDisplay(s.y, 'altitude', units)
+  }));
+  const maxX = trajSamples.reduce((m, s) => (s.x > m ? s.x : m), 0);
+  if (maxX < 0.01) {
+    trajHost.appendChild(createEl('p', {
+      class: 'chart-empty',
+      text: 'Lancement vertical — aucune portée horizontale à afficher.'
+    }));
+    return;
+  }
+  renderChart(trajHost, trajSamples, {
+    xKey: 'x', yKey: 'y',
+    xLabel: `Distance horizontale (${altUnit})`,
+    yLabel: `Altitude (${altUnit})`,
+    unit: altUnit, xUnit: altUnit, xDecimals: 1,
+    color: '#a855f7'
+  });
+}
+
+/** Exécute la simulation et met à jour tous les affichages. */
 function run() {
   const { config, errors } = readForm(form);
   showErrors(errors);
@@ -59,26 +102,13 @@ function run() {
 
   const result = simulate(config, 0.01, 600);
   renderResults(resultsHost, result, config);
-
   refreshUnitLabels(form);
-
-  for (const def of CHART_DEFS) {
-    const samples = convertSamples(result.samples, def.yKey, def.quantity);
-    const unit = def.quantity ? unitLabel(def.quantity) : def.unit;
-    renderChart(/** @type {HTMLElement} */ ($(def.host)), samples, {
-      xKey: 't',
-      yKey: def.yKey,
-      xLabel: 'Temps (s)',
-      yLabel: `${def.base} (${unit})`,
-      unit,
-      color: def.color
-    });
-  }
+  renderCharts(result);
 }
 
 const runLive = debounce(run, 200);
 
-// --- Initialisation sélecteur de presets ---
+// --- Initialisation du sélecteur de presets ---
 for (const preset of PRESETS) {
   const option = document.createElement('option');
   option.value = preset.id;
@@ -105,7 +135,6 @@ on(/** @type {HTMLElement} */ ($('#reset')), 'click', () => {
   run();
 });
 
-// Recalcule si les unités changent dans un autre onglet
 on(window, 'storage', (event) => {
   if (event.key === 'rocket-simulator:units') run();
 });

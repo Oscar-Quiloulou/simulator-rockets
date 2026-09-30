@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simulateur — Rocket Simulator</title>
-  <meta name="description" content="Simulateur 1D de vol de fusée artisanale.">
+  <meta name="description" content="Simulateur 2D de vol de fusée artisanale.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/style.css">
@@ -57,7 +57,7 @@
             <input type="number" id="dryMass" name="dryMass" value="120" min="0.001" step="0.1">
           </label>
           <label class="field">
-            <span class="field-label" data-tip="Masse du mélange carburant + comburant qui brûle pendant la combustion." tabindex="0">
+            <span class="field-label" data-tip="Masse du mélange carburant + comburant qui brûle." tabindex="0">
               Propergol <span class="field-unit" data-unit-for="mass">(g)</span>
             </span>
             <input type="number" id="propellantMass" name="propellantMass" value="50" min="0" step="0.1">
@@ -66,13 +66,13 @@
 
         <div class="field-row">
           <label class="field">
-            <span class="field-label" data-tip="Diamètre extérieur du corps de la fusée. Plus il est grand, plus la traînée est forte." tabindex="0">
+            <span class="field-label" data-tip="Diamètre extérieur du corps de la fusée." tabindex="0">
               Diamètre <span class="field-unit" data-unit-for="length">(mm)</span>
             </span>
             <input type="number" id="diameter" name="diameter" value="25" min="1" step="0.1">
           </label>
           <label class="field">
-            <span class="field-label" data-tip="Coefficient de traînée, sans unité. 0,3 = très aérodynamique ; 1,0 = forme plate." tabindex="0">
+            <span class="field-label" data-tip="Coefficient de traînée (sans unité). 0,3 = très aérodynamique ; 1,0 = forme plate." tabindex="0">
               Cd (—)
             </span>
             <input type="number" id="cd" name="cd" value="0.5" min="0.01" step="0.01">
@@ -81,8 +81,8 @@
 
         <div class="field-row">
           <label class="field">
-            <span class="field-label" data-tip="Force exercée par le moteur pendant la combustion. 1 N ≈ poids d'une pomme (100 g)." tabindex="0">
-              Poussée moyenne <span class="field-unit" data-unit-for="force">(N)</span>
+            <span class="field-label" data-tip="Force exercée par le moteur. 1 N ≈ poids d'une pomme (100 g)." tabindex="0">
+              Poussée <span class="field-unit" data-unit-for="force">(N)</span>
             </span>
             <input type="number" id="thrust" name="thrust" value="40" min="0" step="0.1">
           </label>
@@ -95,10 +95,26 @@
         </div>
 
         <label class="field">
-          <span class="field-label" data-tip="Impulsion spécifique : note d'efficacité du couple carburant/comburant. Solide amateur ≈ 100–130 s ; liquide pro ≈ 300–450 s." tabindex="0">
-            Impulsion spécifique <span class="field-unit" data-unit-for="isp">(s)</span>
+          <span class="field-label" data-tip="Impulsion spécifique : note d'efficacité du carburant. Solide amateur ≈ 100–130 s." tabindex="0">
+            Impulsion spécifique (s)
           </span>
           <input type="number" id="isp" name="isp" value="110" min="1" step="1">
+        </label>
+
+        <h3 class="chart-title">Lancement</h3>
+
+        <label class="field">
+          <span class="field-label" data-tip="Inclinaison depuis la verticale. 0° = tir vertical. Au-delà de 45°, la portée devient très importante." tabindex="0">
+            Angle (°)
+          </span>
+          <input type="number" id="launchAngle" name="launchAngle" value="0" min="0" max="80" step="1">
+        </label>
+
+        <label class="field">
+          <span class="field-label" data-tip="Longueur de la rampe ou du tube qui guide la fusée au décollage. 0 = lancement libre." tabindex="0">
+            Guidage <span class="field-unit" data-unit-for="length">(mm)</span>
+          </span>
+          <input type="number" id="railLength" name="railLength" value="1000" min="0" step="10">
         </label>
       </form>
 
@@ -129,6 +145,11 @@
       <div class="card">
         <h3 class="chart-title">Accélération</h3>
         <div class="chart-host" id="chart-acceleration"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="chart-title">Trajectoire (vue de côté)</h3>
+        <div class="chart-host" id="chart-trajectory"></div>
       </div>
     </section>
 
