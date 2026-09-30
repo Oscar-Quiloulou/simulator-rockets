@@ -199,7 +199,7 @@ input[type="number"] {
 }
 
 /* ==========================================================================
-   6. Graphiques SVG
+   6. Graphiques SVG (simulateur)
    ========================================================================== */
 .chart-host {
   position: relative;
@@ -323,7 +323,7 @@ input[type="number"] {
 }
 
 /* ==========================================================================
-   8. Contenu éditorial (about)
+   8. Contenu éditorial (about / advanced)
    ========================================================================== */
 .prose h2 {
   font-size: 20px;
@@ -381,6 +381,7 @@ input[type="number"] {
   border-left-color: var(--danger);
   background: rgba(220, 38, 38, 0.07);
 }
+
 /* ==========================================================================
    9. Tooltips (data-tip)
    ========================================================================== */
@@ -508,6 +509,7 @@ input[type="number"] {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
 /* ==========================================================================
    12. Diagramme de la page Construction — mise en évidence
    ========================================================================== */
@@ -535,6 +537,21 @@ input[type="number"] {
   color: var(--text-dim);
   text-align: center;
   font-style: italic;
+}
+
+/* Contrainte de taille : le SVG ne doit jamais dépasser la hauteur du viewport.
+   On écrase width:100% héritée de .chart pour préserver le ratio portrait. */
+#rocket-diagram {
+  display: flex;
+  justify-content: center;
+}
+
+#rocket-diagram svg.chart {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(52vh, 460px);
+  margin-inline: auto;
 }
 
 /* Le label complet devient « cliquable » quand il pilote le schéma */
