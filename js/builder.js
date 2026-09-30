@@ -1,5 +1,6 @@
 /**
- * Page Construction : câblage formulaire, schéma, envoi vers le simulateur.
+ * Page Construction : câblage formulaire, schéma, aperçu trajectoire,
+ * envoi vers le simulateur.
  * @module builder
  */
 
@@ -12,6 +13,7 @@ import {
   saveState, loadState, applyState
 } from './structure.js';
 import { drawDiagram, setHighlight } from './diagram.js';
+import { drawLaunchPreview } from './launch-preview.js';
 import { $, on, fmt, createEl } from './ui.js';
 
 const STORAGE_KEY = 'rocket-simulator:config';
@@ -65,7 +67,30 @@ function hoverField(fieldId) {
 }
 
 /**
- * Met à jour tableau, indicateurs et schéma.
+ * Construit la config passée au moteur physique.
+ * @param {ReturnType<typeof collect>} input
+ * @param {ReturnType<typeof computeStructure>} model
+ * @returns {import('./physics.js').RocketConfig}
+ */
+function buildSimConfig(input, model) {
+  const dryMass = Math.max(0.001, model.totalMass - input.motor.propellant);
+  return {
+    name: 'Aperçu construction',
+    dryMass,
+    propellantMass: input.motor.propellant,
+    diameter: model.diameter,
+    cd: input.dragCd,
+    thrust: input.motor.thrust,
+    burnTime: input.motor.burnTime,
+    isp: input.motor.isp,
+    launchAngle: input.launchAngle,
+    railLength: input.launchMethod === 'free' ? 0 : input.railLength,
+    launchMethod: input.launchMethod
+  };
+}
+
+/**
+ * Met à jour tableau, indicateurs, schéma et aperçu trajectoire.
  */
 function render() {
   const input = collect();
@@ -76,7 +101,7 @@ function render() {
   const massUnit = unitLabel('mass', units);
   const lengthUnit = unitLabel('length', units);
 
-  // Tableau des pièces
+  // --- Tableau des pièces ---
   const tbody = /** @type {HTMLElement} */ ($('#parts-body'));
   tbody.textContent = '';
   for (const part of model.parts) {
@@ -92,13 +117,13 @@ function render() {
     createEl('td', { class: 'num', text: fmt(toDisplay(model.cg, 'length', units), 1) })
   ]));
 
-  // Statistiques
+  // --- Statistiques ---
   $('#out-mass').textContent = `${fmt(toDisplay(model.totalMass, 'mass', units), 3)} ${massUnit}`;
   $('#out-cg').textContent = `${fmt(toDisplay(model.cg, 'length', units), 1)} ${lengthUnit}`;
   $('#out-cp').textContent = `${fmt(toDisplay(model.cp, 'length', units), 1)} ${lengthUnit}`;
   $('#out-margin').textContent = fmt(model.margin, 2);
 
-  // Indicateur de stabilité
+  // --- Stabilité ---
   const badge = /** @type {HTMLElement} */ ($('#stability-badge'));
   const text = /** @type {HTMLElement} */ ($('#stability-text'));
 
@@ -122,7 +147,7 @@ function render() {
       'Marge < 0,5 calibre : risque de culbute. Ajoutez du poids en pointe ou agrandissez les ailerettes.';
   }
 
-  // Description du lancement
+  // --- Description du lancement ---
   const info = $('#out-launch-info');
   if (info) {
     const isFree = input.launchMethod === 'free' || input.railLength <= 1e-6;
@@ -136,7 +161,14 @@ function render() {
     }
   }
 
+  // --- Schéma ---
   drawDiagram(/** @type {HTMLElement} */ ($('#rocket-diagram')), model);
+
+  // --- Aperçu de la trajectoire ---
+  const previewHost = $('#launch-preview');
+  if (previewHost) {
+    drawLaunchPreview(previewHost, buildSimConfig(input, model));
+  }
 }
 
 /** Envoie la configuration vers le simulateur. */

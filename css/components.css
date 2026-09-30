@@ -435,7 +435,7 @@ input[type="number"] { font-variant-numeric: tabular-nums; }
 }
 
 /* ==========================================================================
-   12. Diagramme (builder) — highlight + guide
+   12. Diagramme (builder) — highlight + guide + aperçu
    ========================================================================== */
 .dgm-shape {
   transition: stroke 0.15s ease, stroke-width 0.15s ease, filter 0.15s ease;
@@ -477,6 +477,20 @@ input[type="number"] { font-variant-numeric: tabular-nums; }
   height: auto;
   max-width: 100%;
   max-height: min(52vh, 460px);
+  margin-inline: auto;
+}
+
+/* Aperçu de trajectoire : SVG carré, centré, taille contrôlée */
+.preview-host {
+  display: flex;
+  justify-content: center;
+}
+
+.preview-host svg.chart {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(38vh, 320px);
   margin-inline: auto;
 }
 
