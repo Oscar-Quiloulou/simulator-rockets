@@ -508,3 +508,72 @@ input[type="number"] {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+/* ==========================================================================
+   12. Diagramme de la page Construction — mise en évidence
+   ========================================================================== */
+.dgm-shape {
+  transition: stroke 0.15s ease, stroke-width 0.15s ease, filter 0.15s ease;
+}
+
+.dgm-group.is-focus .dgm-shape {
+  stroke: #fbbf24;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.75));
+}
+
+.dgm-guide {
+  display: none;
+  pointer-events: none;
+}
+.dgm-guide.is-visible {
+  display: block;
+}
+
+.diagram-hint {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Le label complet devient « cliquable » quand il pilote le schéma */
+.field[data-diagram] {
+  cursor: help;
+}
+.field[data-diagram]:hover .field-label,
+.field[data-diagram]:focus-within .field-label {
+  color: var(--accent);
+  transition: color 0.15s;
+}
+
+/* ==========================================================================
+   13. Colonne « Construction » collante (desktop uniquement)
+   ========================================================================== */
+.layout--builder {
+  align-items: start;
+}
+
+@media (min-width: 769px) {
+  .layout--builder .col-right {
+    position: sticky;
+    top: 56px;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
+    align-self: start;
+    padding-right: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+  }
+
+  .layout--builder .col-right::-webkit-scrollbar {
+    width: 6px;
+  }
+  .layout--builder .col-right::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+  }
+  .layout--builder .col-right::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
