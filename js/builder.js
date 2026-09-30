@@ -4,7 +4,9 @@
  */
 
 import { fillMaterialSelect } from './materials.js';
-import { getUnits, fromDisplay, refreshUnitLabels } from './units.js';
+import {
+  getUnits, toDisplay, unitLabel, fromDisplay, refreshUnitLabels
+} from './units.js';
 import {
   DEFAULT_STATE, collect, computeStructure,
   saveState, loadState, applyState
@@ -70,26 +72,36 @@ function render() {
   saveState(input);
   const model = computeStructure(input);
 
+  const units = getUnits();
+  const massUnit = unitLabel('mass', units);
+  const lengthUnit = unitLabel('length', units);
+
+  // --- Tableau des pièces ---
   const tbody = /** @type {HTMLElement} */ ($('#parts-body'));
   tbody.textContent = '';
   for (const part of model.parts) {
     tbody.appendChild(createEl('tr', {}, [
       createEl('td', { text: part.name }),
-      createEl('td', { class: 'num', text: fmt(part.mass, 3) }),
-      createEl('td', { class: 'num', text: fmt(part.cg * 100, 1) })
+      createEl('td', { class: 'num', text: fmt(toDisplay(part.mass, 'mass', units), 3) }),
+      createEl('td', { class: 'num', text: fmt(toDisplay(part.cg, 'length', units), 1) })
     ]));
   }
   tbody.appendChild(createEl('tr', {}, [
     createEl('td', { text: 'Total' }),
-    createEl('td', { class: 'num', text: fmt(model.totalMass, 3) }),
-    createEl('td', { class: 'num', text: fmt(model.cg * 100, 1) })
+    createEl('td', { class: 'num', text: fmt(toDisplay(model.totalMass, 'mass', units), 3) }),
+    createEl('td', { class: 'num', text: fmt(toDisplay(model.cg, 'length', units), 1) })
   ]));
 
-  $('#out-mass').textContent = `${fmt(model.totalMass, 3)} kg`;
-  $('#out-cg').textContent = `${fmt(model.cg * 100, 1)} cm`;
-  $('#out-cp').textContent = `${fmt(model.cp * 100, 1)} cm`;
+  // --- Statistiques principales (unités dynamiques) ---
+  $('#out-mass').textContent =
+    `${fmt(toDisplay(model.totalMass, 'mass', units), 3)} ${massUnit}`;
+  $('#out-cg').textContent =
+    `${fmt(toDisplay(model.cg, 'length', units), 1)} ${lengthUnit}`;
+  $('#out-cp').textContent =
+    `${fmt(toDisplay(model.cp, 'length', units), 1)} ${lengthUnit}`;
   $('#out-margin').textContent = fmt(model.margin, 2);
 
+  // --- Indicateur de stabilité ---
   const badge = /** @type {HTMLElement} */ ($('#stability-badge'));
   const text = /** @type {HTMLElement} */ ($('#stability-text'));
 
