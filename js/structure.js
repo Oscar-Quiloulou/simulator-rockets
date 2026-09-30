@@ -95,6 +95,19 @@ export function collect() {
 /**
  * Calcule masses, CG, CP, marge statique. x = 0 à la base.
  * @param {ReturnType<typeof collect>} input
+ * @returns {{
+ *   parts: {name:string,mass:number,cg:number}[],
+ *   totalMass: number,
+ *   cg: number,
+ *   cp: number,
+ *   margin: number,
+ *   diameter: number,
+ *   body: Object,
+ *   nose: Object,
+ *   fins: Object,
+ *   motor: Object,
+ *   payload: Object
+ * }}
  */
 export function computeStructure(input) {
   const { body, nose, fins, motor, payload } = input;
@@ -149,7 +162,19 @@ export function computeStructure(input) {
   const cp = sumCNa > 0 ? (cNaNose * xNose + cNaFins * xFins) / sumCNa : xNose;
   const margin = diameter > 0 ? (cg - cp) / diameter : 0;
 
-  return { parts, totalMass, cg, cp, margin, diameter };
+  return {
+    parts,
+    totalMass,
+    cg,
+    cp,
+    margin,
+    diameter,
+    body,
+    nose,
+    fins,
+    motor,
+    payload
+  };
 }
 
 /**
